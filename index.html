@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RÉPUBLIQUE - Simulateur 2017</title>
+    <style>
+        :root {
+            --navy-deep: #051024;
+            --navy-light: #0f2545;
+            --gold: #d4af37;
+            --gold-dim: #8a7329;
+            --white-off: #e6e6e6;
+            --red-muted: #c0392b;
+            --green-muted: #27ae60;
+            --glass: rgba(15, 37, 69, 0.7);
+            --glass-border: rgba(212, 175, 55, 0.3);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        body {
+            background-color: var(--navy-deep);
+            color: var(--white-off);
+            font-family: 'Montserrat', 'Inter', sans-serif;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #0f2545 0%, #051024 80%);
+        }
+
+        /* --- TYPOGRAPHY & UI ELEMENTS --- */
+        h1, h2, h3 { text-transform: uppercase; letter-spacing: 2px; }
+        .gold-text { color: var(--gold); }
+        
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-deep) 100%);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background: var(--gold);
+            color: var(--navy-deep);
+            box-shadow: 0 0 15px var(--gold-dim);
+        }
+
+        /* --- SCREENS --- */
+        .screen { display: none; height: 100%; width: 100%; }
+        .active { display: flex; }
+
+        /* --- SELECTION SCREEN --- */
+        #selection-screen {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: 80%;
+            max-height: 70vh;
+            overflow-y: auto;
+            margin-top: 30px;
+        }
+
+        .candidate-card {
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .candidate-card:hover { transform: translateY(-5px); border-color: var(--gold); }
+
+        /* --- MAIN DASHBOARD --- */
+        #game-screen {
+            display: grid;
+            grid-template-columns: 250px 1fr 250px;
+            grid-template-rows: 60px 1fr 80px;
+            gap: 15px;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        /* Header */
+        header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--gold-dim);
+            padding: 0 20px;
+        }
+        .marianne-icon { font-size: 24px; color: var(--gold); margin-right: 10px; }
+
+        /* Panels */
+        #left-panel, #right-panel { display: flex; flex-direction: column; gap: 15px; }
+        
+        #center-stage {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Map Placeholder */
+        .hex-map {
+            width: 300px;
+            height: 300px;
+            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" fill="none" stroke="%23d4af37" stroke-width="2"/></svg>') no-repeat center;
+            background-size: contain;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.3;
+            margin-bottom: 20px;
+        }
+
+        /* Event Modal inside Center Stage */
+        .event-box {
+            width: 90%;
+            max-width: 600px;
+            z-index: 10;
+        }
+        
+        .choice-btn {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            text-align: left;
+            font-size: 0.9em;
+        }
+
+        /* Stats Bars */
+        .stat-row { margin-bottom: 10px; font-size: 0.8em; }
+        .progress-bar {
+            background: rgba(255,255,255,0.1);
+            height: 6px;
+            border-radius: 3px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--gold);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Bottom Dock */
+        #bottom-dock {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            align-items: center;
+            background: var(--glass);
+            border-top: 1px solid var(--gold-dim);
+            border-radius: 12px 12px 0 0;
+        }
+        .dock-icon { opacity: 0.7; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-size: 0.7em;}
+        .dock-icon:hover { opacity: 1; color: var(--gold); }
+
+        .tag-bonus { color: var(--green-muted); font-size: 0.8em; margin-left: 5px; }
+        .tag-malus { color: var(--red-muted); font-size: 0.8em; margin-left: 5px; }
+
+    </style>
+</head>
+<body>
+
+    <div id="selection-screen" class="screen active">
+        <div style="text-align:center; margin-bottom:40px;">
+            <span style="font-size:3em; color:var(--gold);">RÉPUBLIQUE</span>
+            <br><span style="letter-spacing: 5px; font-size: 0.8em;">SIMULATEUR ÉLECTION 2017</span>
+        </div>
+        <h3>Choisissez votre Candidat</h3>
+        <div class="candidates-grid" id="candidates-container">
+            </div>
+    </div>
+
+    <div id="game-screen" class="screen">
+        <header>
+            <div style="display:flex; align-items:center;">
+                <span class="marianne-icon">🏛️</span>
+                <span style="font-weight:bold;">RÉPUBLIQUE</span>
+            </div>
+            <div id="date-display" class="gold-text">23 AVRIL 2017</div>
+            <div id="prestige-display">SCORE GLOBAL: 0%</div>
+        </header>
+
+        <div id="left-panel">
+            <div class="glass-panel" style="flex:1;">
+                <h4 class="gold-text">SONDAGES / POPULATION</h4>
+                <div id="population-stats">
+                    </div>
+            </div>
+        </div>
+
+        <div id="center-stage">
+            <div class="hex-map"></div> <div id="event-container" class="glass-panel event-box">
+                <h3 id="event-title" class="gold-text">TITRE EVENT</h3>
+                <p id="event-desc">Description de l'évènement...</p>
+                <div id="choices-container">
+                    </div>
+            </div>
+        </div>
+
+        <div id="right-panel">
+            <div class="glass-panel">
+                <h4 class="gold-text">AGENDA</h4>
+                <div style="font-size:0.9em; margin-bottom:10px; border-left: 2px solid var(--gold); padding-left:10px;">
+                    <strong style="display:block;">Aujourd'hui</strong>
+                    <span id="agenda-current">Campagne officielle</span>
+                </div>
+                <div style="font-size:0.9em; opacity:0.6; padding-left:12px;">
+                    <strong style="display:block;">Prochain tour</strong>
+                    <span id="agenda-next">Meeting National</span>
+                </div>
+            </div>
+            <div class="glass-panel" style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                <h1 id="global-score-big" style="font-size:3em; margin:0;">0%</h1>
+                <span style="font-size:0.8em; text-transform:uppercase;">Intentions de vote</span>
+            </div>
+        </div>
+
+        <div id="bottom-dock">
+            <div class="dock-icon"><span>📢</span>Campagne</div>
+            <div class="dock-icon"><span>💰</span>Budget</div>
+            <div class="dock-icon"><span>⚖️</span>Parlement</div>
+            <div class="dock-icon"><span>📺</span>Médias</div>
+            <div class="dock-icon"><span>👥</span>Cabinet</div>
+        </div>
+    </div>
+
+<script>
+    // --- 1. DATA STRUCTURES ---
+
+    // Les 8 catégories de population avec leur poids (total ~100 normalized in logic)
+    const POPULATION = {
+        agriculteurs: { label: "Agriculteurs", weight: 1.5, score: 50 },
+        artisans: { label: "Artisans/Chefs", weight: 6.7, score: 50 },
+        cadres: { label: "Cadres/Sup", weight: 22.4, score: 50 },
+        intermediaires: { label: "Prof. Interm.", weight: 25.1, score: 50 },
+        employes: { label: "Employés", weight: 25.2, score: 50 },
+        ouvriers: { label: "Ouvriers", weight: 18.6, score: 50 },
+        retraites: { label: "Retraités", weight: 27.0, score: 50 }, // Note: Poids ajusté pour le jeu (base électorale active)
+        inactifs: { label: "Autres/Inactifs", weight: 16.0, score: 50 }
+    };
+
+    const CANDIDATES = [
+        { name: "N. Dupont-Aignan", party: "DLF" },
+        { name: "Marine Le Pen", party: "FN" },
+        { name: "Emmanuel Macron", party: "EM" },
+        { name: "Benoît Hamon", party: "PS" },
+        { name: "Nathalie Arthaud", party: "LO" },
+        { name: "Philippe Poutou", party: "NPA" },
+        { name: "Jacques Cheminade", party: "S&P" },
+        { name: "Jean Lassalle", party: "Résistons" },
+        { name: "J-L. Mélenchon", party: "LFI" },
+        { name: "François Asselineau", party: "UPR" },
+        { name: "François Fillon", party: "LR" }
+    ];
+
+    // Exemple d'événements (Questions)
+    const EVENTS = [
+        {
+            title: "L'Affaire des emplois fictifs",
+            desc: "Un scandale éclate touchant un concurrent majeur sur des soupçons d'emplois fictifs. Les journalistes vous demandent une réaction.",
+            choices: [
+                { text: "Dénoncer la corruption de la 'vieille politique'.", effects: { ouvriers: 3, inactifs: 2, cadres: -1 } },
+                { text: "Rester prudent et demander à laisser la justice faire son travail.", effects: { cadres: 2, retraites: 2, ouvriers: -1 } },
+                { text: "Attaquer les médias pour leur acharnement.", effects: { artisans: 2, agriculteurs: 2, cadres: -3 } }
+            ]
+        },
+        {
+            title: "Crise agricole",
+            desc: "Les éleveurs bloquent les routes pour protester contre les prix du lait. Que faites-vous ?",
+            choices: [
+                { text: "Aller sur un barrage pour les soutenir.", effects: { agriculteurs: 10, ouvriers: 2, cadres: -1 } },
+                { text: "Proposer une réforme européenne de la PAC.", effects: { agriculteurs: 2, cadres: 3, intermediaires: 2 } },
+                { text: "Condamner les blocages qui paralysent l'économie.", effects: { agriculteurs: -5, cadres: 2, artisans: 1 } }
+            ]
+        }
+    ];
+
+    // Cibles de meeting
+    const MEETING_TARGETS = [
+        { name: "MEDEF (Paris)", type: "Syndicat", effects: { artisans: 4, cadres: 3, ouvriers: -3, employes: -2 } },
+        { name: "CGT (Usine Nord)", type: "Syndicat", effects: { ouvriers: 5, employes: 2, cadres: -2, artisans: -2 } },
+        { name: "FNSEA (Salon Agri)", type: "Syndicat", effects: { agriculteurs: 6, retraites: 1, cadres: -1 } },
+        { name: "Marseille (Meeting Public)", type: "Ville", effects: { inactifs: 2, ouvriers: 2, intermediaires: 1 } },
+        { name: "Versailles (Meeting Public)", type: "Ville", effects: { retraites: 3, cadres: 2, inactifs: -2 } }
+    ];
+
+    // --- 2. GAME STATE ---
+    let gameState = {
+        candidate: null,
+        turn: 0,
+        isMeetingTurn: false
+    };
+
+    // --- 3. LOGIC & FUNCTIONS ---
+
+    function initSelectionScreen() {
+        const container = document.getElementById('candidates-container');
+        CANDIDATES.forEach(c => {
+            let div = document.createElement('div');
+            div.className = 'candidate-card glass-panel';
+            div.innerHTML = `<h3 class="gold-text">${c.name}</h3><p>${c.party}</p>`;
+            div.onclick = () => startGame(c);
+            container.appendChild(div);
+        });
+    }
+
+    function startGame(candidate) {
+        gameState.candidate = candidate;
+        document.getElementById('selection-screen').classList.remove('active');
+        document.getElementById('game-screen').classList.add('active');
+        updateUI();
+        loadNextStep();
+    }
+
+    function calculateGlobalScore() {
+        let totalScore = 0;
+        let totalWeight = 0;
+        for (let key in POPULATION) {
+            totalScore += POPULATION[key].score * POPULATION[key].weight;
+            totalWeight += POPULATION[key].weight;
+        }
+        // Normalisation simple pour l'affichage (fictif pour le jeu)
+        return (totalScore / totalWeight).toFixed(1);
+    }
+
+    function updateUI() {
+        // Update Polls
+        const statsContainer = document.getElementById('population-stats');
+        statsContainer.innerHTML = '';
+        for (let key in POPULATION) {
+            let pop = POPULATION[key];
+            let row = document.createElement('div');
+            row.className = 'stat-row';
+            row.innerHTML = `
+                <div style="display:flex; justify-content:space-between;">
+                    <span>${pop.label}</span>
+                    <span>${pop.score}%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:${pop.score}%"></div></div>
+            `;
+            statsContainer.appendChild(row);
+        }
+
+        // Update Global
+        let score = calculateGlobalScore();
+        document.getElementById('global-score-big').innerText = score + "%";
+        document.getElementById('prestige-display').innerText = "SCORE: " + score + "%";
+        
+        // Update Turn info
+        document.getElementById('date-display').innerText = `SEMAINE ${gameState.turn + 1} / 10`;
+    }
+
+    function applyEffects(effects) {
+        // Applique les modificateurs aux catégories
+        for (let key in effects) {
+            if (POPULATION[key]) {
+                POPULATION[key].score += effects[key];
+                // Cap entre 0 et 100
+                if(POPULATION[key].score > 100) POPULATION[key].score = 100;
+                if(POPULATION[key].score < 0) POPULATION[key].score = 0;
+            }
+        }
+        updateUI();
+    }
+
+    function loadNextStep() {
+        const titleEl = document.getElementById('event-title');
+        const descEl = document.getElementById('event-desc');
+        const choicesEl = document.getElementById('choices-container');
+        choicesEl.innerHTML = '';
+
+        if (gameState.isMeetingTurn) {
+            // MODE MEETING
+            titleEl.innerText = "ORGANISATION DE MEETING";
+            descEl.innerText = "Vos conseillers attendent vos directives. Où souhaitez-vous organiser votre grand rassemblement cette semaine ?";
+            document.getElementById('agenda-current').innerText = "Meeting";
+            document.getElementById('agenda-next').innerText = "Evènement";
+
+            MEETING_TARGETS.forEach(target => {
+                let btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                
+                // Calculer les impacts pour l'affichage (preview)
+                let bonus = []; 
+                let malus = [];
+                for(let k in target.effects) {
+                    if(target.effects[k] > 0) bonus.push(POPULATION[k].label);
+                    else malus.push(POPULATION[k].label);
+                }
+
+                btn.innerHTML = `<strong>${target.name}</strong> <span style="opacity:0.7">(${target.type})</span><br>
+                <span class="tag-bonus">▲ ${bonus.join(', ')}</span> 
+                <span class="tag-malus">▼ ${malus.join(', ')}</span>`;
+                
+                btn.onclick = () => {
+                    applyEffects(target.effects);
+                    gameState.isMeetingTurn = false;
+                    gameState.turn++;
+                    loadNextStep();
+                };
+                choicesEl.appendChild(btn);
+            });
+
+        } else {
+            // MODE QUESTION / EVENEMENT
+            // Pour le prototype, on boucle sur les 2 questions
+            let eventIndex = gameState.turn % EVENTS.length;
+            let evt = EVENTS[eventIndex];
+
+            titleEl.innerText = evt.title;
+            descEl.innerText = evt.desc;
+            document.getElementById('agenda-current').innerText = "Evènement";
+            document.getElementById('agenda-next').innerText = "Meeting";
+
+            evt.choices.forEach(choice => {
+                let btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.innerText = choice.text;
+                btn.onclick = () => {
+                    applyEffects(choice.effects);
+                    gameState.isMeetingTurn = true; // Prochain tour = meeting
+                    // On n'incrémente pas le tour ici, le meeting est la 2eme partie de la sequence
+                    loadNextStep();
+                };
+                choicesEl.appendChild(btn);
+            });
+        }
+    }
+
+    // Init
+    initSelectionScreen();
+
+</script>
+</body>
+</html>
