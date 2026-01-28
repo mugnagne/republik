@@ -827,7 +827,137 @@
             ]
         }
     ];
-
+// --- ÉVÈNEMENTS DE SEUIL (Triggered) ---
+    const THRESHOLD_EVENTS = {
+        cadres: {
+            low: { 
+                threshold: 10, // Si < 10%
+                title: "Exil des Cerveaux", 
+                desc: "Panique à la Défense ! Les sondages catastrophiques chez les cadres provoquent une menace de délocalisation massive des sièges sociaux.",
+                btn: "Tenter de rassurer (sans succès garanti)",
+                eff: { employes: -5, artisans: -5, inactifs: 5 } // Baisse confiance éco, mais plait aux radicaux
+            },
+            high: { 
+                threshold: 90, // Si > 90%
+                title: "Soutien du CAC 40", 
+                desc: "Le patronat est unanime. Le MEDEF finance secrètement une campagne d'affichage massive en votre faveur.",
+                btn: "Accepter ce soutien discret",
+                eff: { artisans: 5, employes: 3, ouvriers: -2 } // Rassure l'éco, énerve la base ouvrière
+            }
+        },
+        ouvriers: {
+            low: { 
+                threshold: 10, 
+                title: "Occupations d'Usines", 
+                desc: "Se sentant abandonnée, la base ouvrière se radicalise. Des séquestrations de patrons ont lieu dans le Nord.",
+                btn: "Condamner les violences",
+                eff: { cadres: 3, inactifs: 4, employes: -4 } // Climat anxiogène
+            },
+            high: { 
+                threshold: 90, 
+                title: "Le Mur Bleu de Chauffe", 
+                desc: "Les syndicats ouvriers appellent officiellement à voter pour vous. Les usines sont couvertes de vos affiches.",
+                btn: "Saluer le monde du travail",
+                eff: { employes: 5, inactifs: 3, cadres: -3 } // Effraye un peu le capital
+            }
+        },
+        retraites: {
+            low: { 
+                threshold: 10, 
+                title: "La Révolte des Cheveux Blancs", 
+                desc: "Panique sur l'épargne ! Les retraités vident leurs livrets A, craignant votre programme.",
+                btn: "Appeler au calme",
+                eff: { cadres: -5, artisans: -4, intermediaires: -3 } // Krach de confiance
+            },
+            high: { 
+                threshold: 90, 
+                title: "L'Armée des Ombres", 
+                desc: "Le bouche-à-oreille dans les maisons de retraite et les clubs du 3ème âge est total. Le vote des seniors est verrouillé.",
+                btn: "Remercier nos aînés",
+                eff: { agriculteurs: 4, cadres: 2, inactifs: -2 } // Solidarité conservatrice
+            }
+        },
+        inactifs: { // Jeunes / Étudiants
+            low: { 
+                threshold: 10, 
+                title: "Universités Bloquées", 
+                desc: "Les syndicats étudiants vous déclarent 'Ennemi de la Jeunesse'. Des barricades sont érigées à la Sorbonne.",
+                btn: "Envoyer les CRS ou négocier ?",
+                eff: { retraites: 3, cadres: 2, intermediaires: -5 } // Demande d'ordre vs sympathie parents
+            },
+            high: { 
+                threshold: 90, 
+                title: "Hype Absolue", 
+                desc: "Vous êtes devenu un mème viral positif sur les réseaux sociaux. La jeunesse ne jure que par vous.",
+                btn: "Surfer sur le buzz",
+                eff: { intermediaires: 5, ouvriers: 2, retraites: -2 } // Les parents suivent, les grands-parents sont perdus
+            }
+        },
+        agriculteurs: {
+            low: { 
+                threshold: 10, 
+                title: "Opération Escargot", 
+                desc: "Les tracteurs bloquent Paris. Du fumier est déversé devant votre QG de campagne.",
+                btn: "Nettoyer et faire face",
+                eff: { cadres: -3, artisans: -2, ouvriers: 2 } // Pagaille économique
+            },
+            high: { 
+                threshold: 90, 
+                title: "Le Candidat du Terroir", 
+                desc: "La FNSEA appelle à voter pour vous dès le premier tour. Les campagnes sont acquises.",
+                btn: "Boire un coup de rouge",
+                eff: { retraites: 4, artisans: 3, inactifs: -1 }
+            }
+        },
+        artisans: {
+            low: { 
+                threshold: 10, 
+                title: "Rideau de Fer", 
+                desc: "Les commerçants baissent le rideau une heure pour protester contre votre vision économique.",
+                btn: "Dialoguer avec les chambres de commerce",
+                eff: { cadres: -4, retraites: -3 } // Angoisse économique
+            },
+            high: { 
+                threshold: 90, 
+                title: "La France qui se lève tôt", 
+                desc: "Boulangers, plombiers et taxis font votre pub gratuitement auprès de leurs clients.",
+                btn: "Se féliciter",
+                eff: { retraites: 3, ouvriers: 2 }
+            }
+        },
+        intermediaires: { // Profs, Infirmières, Techniciens
+            low: { 
+                threshold: 10, 
+                title: "Grève des Services Publics", 
+                desc: "Profs et infirmières sont dans la rue. Le pays tourne au ralenti.",
+                btn: "Dénoncer la prise d'otage ?",
+                eff: { cadres: -2, employes: -4, inactifs: 4 }
+            },
+            high: { 
+                threshold: 90, 
+                title: "Hégémonie Culturelle", 
+                desc: "Les salles des profs et les hôpitaux sont des bastions imprenables pour vos adversaires.",
+                btn: "Soutenir le service public",
+                eff: { inactifs: 5, cadres: 2 } // Influence sur les jeunes
+            }
+        },
+        employes: {
+            low: { 
+                threshold: 10, 
+                title: "Colère Silencieuse", 
+                desc: "Un boycott massif de vos meetings par les classes populaires tertiaires. L'ambiance est glaciale.",
+                btn: "Tenter une opération séduction",
+                eff: { ouvriers: -3, intermediaires: -2 }
+            },
+            high: { 
+                threshold: 90, 
+                title: "La Vague Populaire", 
+                desc: "Caissiers, secrétaires, agents de sécu... Le cœur battant de la France est derrière vous.",
+                btn: "Incarner le peuple",
+                eff: { ouvriers: 4, intermediaires: 3 }
+            }
+        }
+    };
     // --- MEETING PLACES ---
     const MEETING_PLACES = [
         { name: "Paris (Bercy)", type: "Grand-Messe", eff: { cadres: 4, intermediaires: 3, ouvriers: -2 } },
@@ -862,6 +992,7 @@
 
     function startGame(c) {
         gameState.candidate = c;
+        gameState.triggeredThresholds = []; // <--- AJOUTER CETTE LIGNE
         gameState.turn = 1;
         
         // Init Stats
@@ -974,7 +1105,49 @@
             c.appendChild(btn);
         });
     }
+function checkThresholds() {
+        for (let key in POPULATION) {
+            let score = POPULATION[key].score;
+            let data = THRESHOLD_EVENTS[key];
+            
+            // Check LOW (< 10%)
+            // On vérifie si score < seuil ET si on ne l'a pas déjà joué
+            let lowID = key + "_low";
+            if (score < data.low.threshold && !gameState.triggeredThresholds.includes(lowID)) {
+                triggerThresholdEvent(data.low, lowID);
+                return; // On arrête pour ne déclencher qu'un event à la fois
+            }
 
+            // Check HIGH (> 90%)
+            let highID = key + "_high";
+            if (score > data.high.threshold && !gameState.triggeredThresholds.includes(highID)) {
+                triggerThresholdEvent(data.high, highID);
+                return;
+            }
+        }
+    }
+
+    function triggerThresholdEvent(evtData, id) {
+        // On marque l'event comme joué
+        gameState.triggeredThresholds.push(id);
+
+        // On créé un objet Event compatible avec votre système
+        let newEvent = {
+            title: "⚠️ " + evtData.title, // Petit emoji pour signaler l'urgence
+            desc: evtData.desc,
+            date: "ALERTE INFO", // Pas de date précise
+            choices: [
+                { txt: evtData.btn, eff: evtData.eff }
+            ]
+        };
+
+        // ASTUCE : On insère cet évènement tout de suite en haut de la pile !
+        // Comme ça il apparaîtra au prochain clic sur "Tour suivant" ou immédiatement
+        gameState.eventQueue.unshift(newEvent);
+        
+        // Optionnel : Forcer le rafraichissement immédiat si vous voulez que ça pop tout de suite
+        // Mais le mettre dans la queue est plus sûr pour la stabilité du tour par tour.
+    }
     function applyEffect(eff) {
         for (let k in eff) {
             if(POPULATION[k]) {
