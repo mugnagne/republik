@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RÉPUBLIQUE - Simulateur 2017</title>
+    <title>RÉPUBLIQUE - La Course à l'Élysée</title>
     <style>
         :root {
             --navy-deep: #051024;
@@ -13,9 +13,9 @@
             --white-off: #e6e6e6;
             --red-muted: #c0392b;
             --green-muted: #27ae60;
-            --glass: rgba(15, 37, 69, 0.7);
+            --glass: rgba(15, 37, 69, 0.85);
             --glass-border: rgba(212, 175, 55, 0.3);
-            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
         }
 
         body {
@@ -29,7 +29,7 @@
         }
 
         /* --- TYPOGRAPHY & UI ELEMENTS --- */
-        h1, h2, h3 { text-transform: uppercase; letter-spacing: 2px; }
+        h1, h2, h3 { text-transform: uppercase; letter-spacing: 2px; margin-top: 0;}
         .gold-text { color: var(--gold); }
         
         .glass-panel {
@@ -40,18 +40,20 @@
             border-radius: 12px;
             box-shadow: var(--shadow);
             padding: 20px;
+            transition: all 0.3s ease;
         }
 
         button {
             background: linear-gradient(135deg, var(--navy-light) 0%, var(--navy-deep) 100%);
             border: 1px solid var(--gold);
             color: var(--gold);
-            padding: 10px 20px;
+            padding: 12px 20px;
             cursor: pointer;
             font-weight: bold;
             text-transform: uppercase;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             border-radius: 4px;
+            font-size: 0.9em;
         }
 
         button:hover {
@@ -61,45 +63,41 @@
         }
 
         /* --- SCREENS --- */
-        .screen { display: none; height: 100%; width: 100%; }
+        .screen { display: none; height: 100%; width: 100%; flex-direction: column; }
         .active { display: flex; }
 
         /* --- SELECTION SCREEN --- */
-        #selection-screen {
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-        }
-
+        #selection-screen { align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;}
+        
         .candidates-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            width: 80%;
-            max-height: 70vh;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            width: 90%;
+            max-height: 75vh;
             overflow-y: auto;
-            margin-top: 30px;
+            margin-top: 20px;
+            padding-right: 10px;
         }
 
         .candidate-card {
             cursor: pointer;
             text-align: center;
-            transition: transform 0.2s;
+            border-left: 3px solid transparent;
         }
-        .candidate-card:hover { transform: translateY(-5px); border-color: var(--gold); }
+        .candidate-card:hover { transform: translateY(-5px); border-left: 3px solid var(--gold); background: rgba(212, 175, 55, 0.1); }
 
         /* --- MAIN DASHBOARD --- */
         #game-screen {
             display: grid;
-            grid-template-columns: 250px 1fr 250px;
+            grid-template-columns: 280px 1fr 280px;
             grid-template-rows: 60px 1fr 80px;
             gap: 15px;
             padding: 15px;
             box-sizing: border-box;
+            height: 100vh;
         }
 
-        /* Header */
         header {
             grid-column: 1 / -1;
             display: flex;
@@ -107,11 +105,11 @@
             align-items: center;
             border-bottom: 1px solid var(--gold-dim);
             padding: 0 20px;
+            background: rgba(5, 16, 36, 0.9);
         }
         .marianne-icon { font-size: 24px; color: var(--gold); margin-right: 10px; }
 
-        /* Panels */
-        #left-panel, #right-panel { display: flex; flex-direction: column; gap: 15px; }
+        #left-panel, #right-panel { display: flex; flex-direction: column; gap: 15px; overflow: hidden; }
         
         #center-stage {
             position: relative;
@@ -121,36 +119,37 @@
             justify-content: center;
         }
 
-        /* Map Placeholder */
         .hex-map {
-            width: 300px;
-            height: 300px;
-            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" fill="none" stroke="%23d4af37" stroke-width="2"/></svg>') no-repeat center;
+            position: absolute;
+            width: 80%;
+            height: 80%;
+            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" fill="none" stroke="%23d4af37" stroke-width="0.5" opacity="0.2"/></svg>') no-repeat center;
             background-size: contain;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0.3;
-            margin-bottom: 20px;
+            opacity: 0.2;
+            z-index: 0;
+            animation: pulse 4s infinite ease-in-out;
         }
+        
+        @keyframes pulse { 0% { opacity: 0.1; } 50% { opacity: 0.3; } 100% { opacity: 0.1; } }
 
-        /* Event Modal inside Center Stage */
         .event-box {
             width: 90%;
-            max-width: 600px;
+            max-width: 650px;
             z-index: 10;
+            max-height: 80vh;
+            overflow-y: auto;
         }
         
         .choice-btn {
             display: block;
             width: 100%;
-            margin: 10px 0;
+            margin: 12px 0;
             text-align: left;
-            font-size: 0.9em;
+            padding: 15px;
+            border-left: 4px solid var(--gold-dim);
         }
 
-        /* Stats Bars */
-        .stat-row { margin-bottom: 10px; font-size: 0.8em; }
+        .stat-row { margin-bottom: 8px; font-size: 0.75em; }
         .progress-bar {
             background: rgba(255,255,255,0.1);
             height: 6px;
@@ -162,36 +161,49 @@
             height: 100%;
             background: var(--gold);
             width: 0%;
-            transition: width 0.5s ease;
+            transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        /* Bottom Dock */
         #bottom-dock {
             grid-column: 1 / -1;
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 30px;
             align-items: center;
             background: var(--glass);
             border-top: 1px solid var(--gold-dim);
             border-radius: 12px 12px 0 0;
         }
-        .dock-icon { opacity: 0.7; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-size: 0.7em;}
-        .dock-icon:hover { opacity: 1; color: var(--gold); }
+        .dock-icon { opacity: 0.6; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-size: 0.7em; transition: 0.2s;}
+        .dock-icon:hover { opacity: 1; color: var(--gold); transform: translateY(-3px); }
 
-        .tag-bonus { color: var(--green-muted); font-size: 0.8em; margin-left: 5px; }
-        .tag-malus { color: var(--red-muted); font-size: 0.8em; margin-left: 5px; }
+        .tag-bonus { color: #2ecc71; font-size: 0.8em; margin-left: 5px; }
+        .tag-malus { color: #e74c3c; font-size: 0.8em; margin-left: 5px; }
+
+        /* --- RESULTS SCREEN --- */
+        #results-screen {
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .result-score { font-size: 6em; font-weight: 800; color: var(--gold); text-shadow: 0 0 30px rgba(212, 175, 55, 0.3); margin: 20px 0; }
+        .result-details { max-width: 600px; line-height: 1.6; margin-bottom: 30px;}
+
+        /* Scrollbar custom */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--navy-deep); }
+        ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 4px; }
 
     </style>
 </head>
 <body>
 
     <div id="selection-screen" class="screen active">
-        <div style="text-align:center; margin-bottom:40px;">
-            <span style="font-size:3em; color:var(--gold);">RÉPUBLIQUE</span>
-            <br><span style="letter-spacing: 5px; font-size: 0.8em;">SIMULATEUR ÉLECTION 2017</span>
+        <div style="text-align:center; margin-bottom:20px;">
+            <span style="font-size:3.5em; color:var(--gold); font-weight:800;">RÉPUBLIQUE</span>
+            <br><span style="letter-spacing: 6px; font-size: 0.9em; text-transform:uppercase;">Le Jeu de la Présidentielle 2017</span>
         </div>
-        <h3>Choisissez votre Candidat</h3>
+        <p style="opacity: 0.7;">Sélectionnez votre candidat pour débuter la campagne :</p>
         <div class="candidates-grid" id="candidates-container">
             </div>
     </div>
@@ -200,24 +212,29 @@
         <header>
             <div style="display:flex; align-items:center;">
                 <span class="marianne-icon">🏛️</span>
-                <span style="font-weight:bold;">RÉPUBLIQUE</span>
+                <span style="font-weight:bold; letter-spacing:1px;">RÉPUBLIQUE 2017</span>
             </div>
-            <div id="date-display" class="gold-text">23 AVRIL 2017</div>
-            <div id="prestige-display">SCORE GLOBAL: 0%</div>
+            <div id="date-display" class="gold-text" style="font-weight:bold;">SEMAINE 1</div>
+            <div id="prestige-display" style="font-size:0.9em; opacity:0.8;"></div>
         </header>
 
         <div id="left-panel">
-            <div class="glass-panel" style="flex:1;">
-                <h4 class="gold-text">SONDAGES / POPULATION</h4>
-                <div id="population-stats">
+            <div class="glass-panel" style="flex:1; display:flex; flex-direction:column;">
+                <h4 class="gold-text" style="border-bottom:1px solid var(--gold-dim); padding-bottom:10px; margin-bottom:15px;">Sondages par CSP</h4>
+                <div id="population-stats" style="overflow-y:auto; flex:1;">
                     </div>
             </div>
         </div>
 
         <div id="center-stage">
-            <div class="hex-map"></div> <div id="event-container" class="glass-panel event-box">
-                <h3 id="event-title" class="gold-text">TITRE EVENT</h3>
-                <p id="event-desc">Description de l'évènement...</p>
+            <div class="hex-map"></div> 
+            
+            <div id="event-container" class="glass-panel event-box">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <h3 id="event-title" class="gold-text">TITRE</h3>
+                    <span id="event-tag" style="font-size:0.7em; background:var(--gold); color:var(--navy-deep); padding:2px 6px; border-radius:4px; font-weight:bold;">ACTUALITÉ</span>
+                </div>
+                <p id="event-desc" style="line-height:1.6; min-height:60px;">Description...</p>
                 <div id="choices-container">
                     </div>
             </div>
@@ -226,105 +243,222 @@
         <div id="right-panel">
             <div class="glass-panel">
                 <h4 class="gold-text">AGENDA</h4>
-                <div style="font-size:0.9em; margin-bottom:10px; border-left: 2px solid var(--gold); padding-left:10px;">
-                    <strong style="display:block;">Aujourd'hui</strong>
-                    <span id="agenda-current">Campagne officielle</span>
+                <div style="font-size:0.9em; margin-bottom:15px; border-left: 2px solid var(--gold); padding-left:12px;">
+                    <strong style="display:block; font-size:0.8em; opacity:0.6;">ACTUELLEMENT</strong>
+                    <span id="agenda-current" style="font-size:1.1em;">Lancement</span>
                 </div>
-                <div style="font-size:0.9em; opacity:0.6; padding-left:12px;">
-                    <strong style="display:block;">Prochain tour</strong>
-                    <span id="agenda-next">Meeting National</span>
+                <div style="font-size:0.9em; opacity:0.6; padding-left:14px; border-left: 1px solid rgba(255,255,255,0.2);">
+                    <strong style="display:block; font-size:0.8em;">SUIVANT</strong>
+                    <span id="agenda-next">Meeting</span>
                 </div>
             </div>
             <div class="glass-panel" style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                <h1 id="global-score-big" style="font-size:3em; margin:0;">0%</h1>
-                <span style="font-size:0.8em; text-transform:uppercase;">Intentions de vote</span>
+                <span style="font-size:0.8em; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;">Score National</span>
+                <h1 id="global-score-big" style="font-size:3.5em; margin:0; color:var(--gold);">0%</h1>
+                <span id="trend-indicator" style="font-size:0.9em; color:var(--green-muted);">▲ Stable</span>
             </div>
         </div>
 
         <div id="bottom-dock">
             <div class="dock-icon"><span>📢</span>Campagne</div>
-            <div class="dock-icon"><span>💰</span>Budget</div>
-            <div class="dock-icon"><span>⚖️</span>Parlement</div>
+            <div class="dock-icon"><span>💰</span>Comptes</div>
+            <div class="dock-icon"><span>⚖️</span>Programme</div>
             <div class="dock-icon"><span>📺</span>Médias</div>
-            <div class="dock-icon"><span>👥</span>Cabinet</div>
+            <div class="dock-icon"><span>👥</span>Équipe</div>
         </div>
     </div>
 
-<script>
-    // --- 1. DATA STRUCTURES ---
+    <div id="results-screen" class="screen">
+        <span style="font-size:2em; letter-spacing:4px; margin-bottom:20px;">RÉSULTATS DU 1er TOUR</span>
+        <div class="glass-panel result-details">
+            <h2 id="result-candidate-name" class="gold-text">NOM DU CANDIDAT</h2>
+            <div class="result-score" id="final-score">00.0%</div>
+            <p id="result-text" style="font-size:1.1em; color:var(--white-off);">
+                Analyse de la fin de partie...
+            </p>
+            <div style="margin-top:30px; border-top:1px solid var(--gold-dim); padding-top:20px;">
+                <p>Répartition finale :</p>
+                <div id="final-breakdown" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align:left; font-size:0.9em;"></div>
+            </div>
+        </div>
+        <button onclick="location.reload()" style="margin-top:30px; font-size:1.2em;">REJOUER L'ÉLECTION</button>
+    </div>
 
-    // Les 8 catégories de population avec leur poids (total ~100 normalized in logic)
+<script>
+    // --- 1. DATA ---
+
     const POPULATION = {
         agriculteurs: { label: "Agriculteurs", weight: 1.5, score: 50 },
-        artisans: { label: "Artisans/Chefs", weight: 6.7, score: 50 },
-        cadres: { label: "Cadres/Sup", weight: 22.4, score: 50 },
-        intermediaires: { label: "Prof. Interm.", weight: 25.1, score: 50 },
+        artisans: { label: "Artisans/Commerçants", weight: 6.7, score: 50 },
+        cadres: { label: "Cadres/Supérieurs", weight: 22.4, score: 50 },
+        intermediaires: { label: "Prof. Intermédiaires", weight: 25.1, score: 50 },
         employes: { label: "Employés", weight: 25.2, score: 50 },
         ouvriers: { label: "Ouvriers", weight: 18.6, score: 50 },
-        retraites: { label: "Retraités", weight: 27.0, score: 50 }, // Note: Poids ajusté pour le jeu (base électorale active)
-        inactifs: { label: "Autres/Inactifs", weight: 16.0, score: 50 }
+        retraites: { label: "Retraités", weight: 27.0, score: 50 },
+        inactifs: { label: "Étudiants/Inactifs", weight: 16.0, score: 50 }
     };
 
     const CANDIDATES = [
-        { name: "N. Dupont-Aignan", party: "DLF" },
-        { name: "Marine Le Pen", party: "FN" },
-        { name: "Emmanuel Macron", party: "EM" },
-        { name: "Benoît Hamon", party: "PS" },
-        { name: "Nathalie Arthaud", party: "LO" },
-        { name: "Philippe Poutou", party: "NPA" },
-        { name: "Jacques Cheminade", party: "S&P" },
-        { name: "Jean Lassalle", party: "Résistons" },
-        { name: "J-L. Mélenchon", party: "LFI" },
-        { name: "François Asselineau", party: "UPR" },
-        { name: "François Fillon", party: "LR" }
+        { name: "Emmanuel MACRON", party: "En Marche!", baseStats: { agriculteurs: 15, artisans: 20, cadres: 55, intermediaires: 40, employes: 18, ouvriers: 10, retraites: 30, inactifs: 25 } },
+        { name: "Marine LE PEN", party: "Front National", baseStats: { agriculteurs: 35, artisans: 45, cadres: 8, intermediaires: 20, employes: 42, ouvriers: 58, retraites: 20, inactifs: 25 } },
+        { name: "François FILLON", party: "Les Républicains", baseStats: { agriculteurs: 65, artisans: 40, cadres: 45, intermediaires: 15, employes: 8, ouvriers: 5, retraites: 65, inactifs: 5 } },
+        { name: "Jean-Luc MÉLENCHON", party: "La France Insoumise", baseStats: { agriculteurs: 5, artisans: 8, cadres: 20, intermediaires: 25, employes: 22, ouvriers: 25, retraites: 12, inactifs: 45 } },
+        { name: "Benoît HAMON", party: "Parti Socialiste", baseStats: { agriculteurs: 2, artisans: 5, cadres: 15, intermediaires: 18, employes: 12, ouvriers: 8, retraites: 10, inactifs: 15 } },
+        { name: "Nicolas DUPONT-AIGNAN", party: "Debout la France", baseStats: { agriculteurs: 12, artisans: 10, cadres: 4, intermediaires: 5, employes: 8, ouvriers: 9, retraites: 8, inactifs: 4 } },
+        { name: "Jean LASSALLE", party: "Résistons", baseStats: { agriculteurs: 25, artisans: 5, cadres: 1, intermediaires: 2, employes: 3, ouvriers: 4, retraites: 4, inactifs: 2 } },
+        { name: "Philippe POUTOU", party: "NPA", baseStats: { agriculteurs: 1, artisans: 1, cadres: 1, intermediaires: 4, employes: 5, ouvriers: 8, retraites: 1, inactifs: 6 } },
+        { name: "Nathalie ARTHAUD", party: "Lutte Ouvrière", baseStats: { agriculteurs: 0, artisans: 0, cadres: 0, intermediaires: 1, employes: 2, ouvriers: 4, retraites: 1, inactifs: 1 } },
+        { name: "François ASSELINEAU", party: "UPR", baseStats: { agriculteurs: 1, artisans: 1, cadres: 1, intermediaires: 1, employes: 1, ouvriers: 1, retraites: 1, inactifs: 2 } },
+        { name: "Jacques CHEMINADE", party: "Solidarité & Progrès", baseStats: { agriculteurs: 0, artisans: 0, cadres: 0, intermediaires: 0, employes: 0, ouvriers: 0, retraites: 0, inactifs: 0 } }
     ];
 
-    // Exemple d'événements (Questions)
+    // 12 EVENEMENTS
     const EVENTS = [
         {
-            title: "L'Affaire des emplois fictifs",
-            desc: "Un scandale éclate touchant un concurrent majeur sur des soupçons d'emplois fictifs. Les journalistes vous demandent une réaction.",
+            title: "Le 'Penelope Gate'",
+            desc: "Les révélations sur les emplois présumés fictifs de l'épouse de François Fillon monopolisent les médias. Comment réagir ?",
             choices: [
-                { text: "Dénoncer la corruption de la 'vieille politique'.", effects: { ouvriers: 3, inactifs: 2, cadres: -1 } },
-                { text: "Rester prudent et demander à laisser la justice faire son travail.", effects: { cadres: 2, retraites: 2, ouvriers: -1 } },
-                { text: "Attaquer les médias pour leur acharnement.", effects: { artisans: 2, agriculteurs: 2, cadres: -3 } }
+                { text: "Attaquer Fillon frontalement : 'Il faut rendre l'argent !'", effects: { ouvriers: 3, inactifs: 4, cadres: -2 } },
+                { text: "Rester digne : 'Laissons la justice travailler.'", effects: { retraites: 2, cadres: 3, ouvriers: -1 } },
+                { text: "Dénoncer le 'Cabinet Noir' et l'acharnement médiatique.", effects: { artisans: 3, agriculteurs: 3, cadres: -4 } }
             ]
         },
         {
-            title: "Crise agricole",
-            desc: "Les éleveurs bloquent les routes pour protester contre les prix du lait. Que faites-vous ?",
+            title: "Colère des Agriculteurs",
+            desc: "Blocages monstres en Bretagne contre la grande distribution. Les images sont violentes.",
             choices: [
-                { text: "Aller sur un barrage pour les soutenir.", effects: { agriculteurs: 10, ouvriers: 2, cadres: -1 } },
-                { text: "Proposer une réforme européenne de la PAC.", effects: { agriculteurs: 2, cadres: 3, intermediaires: 2 } },
-                { text: "Condamner les blocages qui paralysent l'économie.", effects: { agriculteurs: -5, cadres: 2, artisans: 1 } }
+                { text: "Se rendre sur place avec un casse-croûte et soutenir le blocage.", effects: { agriculteurs: 12, ouvriers: 2, cadres: -3 } },
+                { text: "Proposer un 'prix plancher' garanti par l'État.", effects: { agriculteurs: 5, cadres: -2, intermediaires: 1 } },
+                { text: "Condamner les violences tout en comprenant la détresse.", effects: { cadres: 3, agriculteurs: -4, retraites: 2 } }
+            ]
+        },
+        {
+            title: "L'Usine Whirlpool d'Amiens",
+            desc: "L'usine est menacée de délocalisation en Pologne. C'est le symbole de la désindustrialisation.",
+            choices: [
+                { text: "Aller parler aux grévistes sur le parking au milieu des fumigènes.", effects: { ouvriers: 8, employes: 4, cadres: -5 } },
+                { text: "Rencontrer l'intersyndicale à la Chambre de Commerce, au calme.", effects: { cadres: 4, ouvriers: -6, intermediaires: 2 } },
+                { text: "Promettre la nationalisation temporaire du site.", effects: { ouvriers: 5, inactifs: 3, cadres: -6, artisans: -4 } }
+            ]
+        },
+        {
+            title: "Débat TV : La Défense",
+            desc: "Le sujet de la sortie de l'Euro et de l'OTAN arrive sur la table lors du Grand Débat.",
+            choices: [
+                { text: "Plaider pour une souveraineté totale et une sortie de l'OTAN.", effects: { ouvriers: 4, artisans: 3, cadres: -6, retraites: -2 } },
+                { text: "Défendre la construction européenne comme seul bouclier.", effects: { cadres: 6, retraites: 3, ouvriers: -4 } },
+                { text: "Proposer une 'Europe des Nations' sans quitter l'Euro.", effects: { intermediaires: 3, artisans: 2, cadres: -2 } }
+            ]
+        },
+        {
+            title: "Polémique 'Colonisation'",
+            desc: "Un candidat a qualifié la colonisation de 'crime contre l'humanité'. Cela divise profondément le pays.",
+            choices: [
+                { text: "Soutenir ces propos : 'Il faut regarder l'Histoire en face'.", effects: { inactifs: 8, intermediaires: 2, retraites: -8, agriculteurs: -5 } },
+                { text: "S'indigner : 'C'est une honte de salir la France !'", effects: { retraites: 6, agriculteurs: 4, inactifs: -6 } },
+                { text: "Nuancer : 'Il y a eu des crimes, mais aussi du partage.'", effects: { cadres: 3, intermediaires: 1, inactifs: -2 } }
+            ]
+        },
+        {
+            title: "Alliance Hamon-Jadot ?",
+            desc: "Les écologistes proposent un pacte. Faut-il verdir radicalement votre programme ?",
+            choices: [
+                { text: "Oui, l'écologie est la priorité absolue du siècle.", effects: { inactifs: 6, intermediaires: 4, agriculteurs: -6, ouvriers: -2 } },
+                { text: "Non, l'écologie ne doit pas tuer l'économie et le nucléaire.", effects: { ouvriers: 3, artisans: 3, inactifs: -4 } },
+                { text: "Proposer une 'écologie de production' (isolation, voitures électriques).", effects: { cadres: 3, artisans: 2, intermediaires: 2 } }
+            ]
+        },
+        {
+            title: "Meeting Hologramme",
+            desc: "Un concurrent utilise un hologramme pour faire deux meetings à la fois. C'est un buzz technologique.",
+            choices: [
+                { text: "Ironiser sur le 'gadget' qui cache le vide du programme.", effects: { retraites: 3, ouvriers: 2, inactifs: -3 } },
+                { text: "Saluer la prouesse technique et l'innovation française.", effects: { inactifs: 4, cadres: 2, ouvriers: -1 } },
+                { text: "Ignorer le sujet pour parler du pouvoir d'achat.", effects: { employes: 3, ouvriers: 3, cadres: -1 } }
+            ]
+        },
+        {
+            title: "Attentat sur les Champs-Élysées",
+            desc: "À 3 jours du vote, un policier est tué. Le contexte sécuritaire devient explosif.",
+            choices: [
+                { text: "Réclamer l'état d'urgence et la fermeture des frontières.", effects: { retraites: 5, ouvriers: 4, artisans: 4, cadres: -3, inactifs: -4 } },
+                { text: "Appeler à l'unité nationale et au sang-froid.", effects: { cadres: 5, intermediaires: 3, inactifs: 2, ouvriers: -2 } },
+                { text: "Accuser le gouvernement de laxisme depuis 5 ans.", effects: { artisans: 3, retraites: 2, cadres: -2 } }
+            ]
+        },
+        {
+            title: "Le 'Grand Oral' des Patrons",
+            desc: "Vous êtes invité par la CPME pour parler charges sociales devant 500 chefs d'entreprise.",
+            choices: [
+                { text: "Promettre la suppression totale du RSI et baisse des charges.", effects: { artisans: 10, cadres: 5, ouvriers: -6, employes: -4 } },
+                { text: "Leur dire qu'ils doivent augmenter les salaires avant tout.", effects: { ouvriers: 6, employes: 6, artisans: -8, cadres: -4 } },
+                { text: "Proposer un pacte : baisse de charges contre embauches.", effects: { cadres: 4, artisans: 2, intermediaires: 2 } }
+            ]
+        },
+        {
+            title: "Révélations de Wikileaks",
+            desc: "Des milliers d'emails de votre équipe de campagne sont piratés et diffusés.",
+            choices: [
+                { text: "Crier à la manipulation étrangère (Russie).", effects: { cadres: 4, intermediaires: 2, ouvriers: -2 } },
+                { text: "Ne rien dire, c'est du bruit pour rien.", effects: { retraites: 2, cadres: 1 } },
+                { text: "Contre-attaquer en diffusant les failles des adversaires.", effects: { inactifs: 3, ouvriers: 2, cadres: -3 } }
+            ]
+        },
+        {
+            title: "La 'Poudre de Perlimpinpin'",
+            desc: "Lors du débat final, un adversaire vous attaque violemment sur votre flou artistique.",
+            choices: [
+                { text: "Répondre par une punchline méprisante mais efficace.", effects: { cadres: 5, inactifs: 3, ouvriers: -4 } },
+                { text: "S'énerver et taper du poing sur la table.", effects: { ouvriers: 4, retraites: -3, cadres: -5 } },
+                { text: "Garder un calme olympien et sourire.", effects: { retraites: 4, intermediaires: 3, ouvriers: -2 } }
+            ]
+        },
+        {
+            title: "Dernière Ligne Droite",
+            desc: "Plus que 24h. Où mettez-vous vos dernières forces ?",
+            choices: [
+                { text: "Une interview au 20h de TF1 (Audience large/âgée).", effects: { retraites: 5, cadres: 2, inactifs: -2 } },
+                { text: "Un live Twitch/Youtube de 4h (Jeunesse).", effects: { inactifs: 8, intermediaires: 2, retraites: -5 } },
+                { text: "Un porte-à-porte géant dans les quartiers populaires.", effects: { ouvriers: 5, employes: 5, cadres: -2 } }
             ]
         }
     ];
 
-    // Cibles de meeting
+    // 15 LOCATIONS (Only 5 picked randomly per turn)
     const MEETING_TARGETS = [
-        { name: "MEDEF (Paris)", type: "Syndicat", effects: { artisans: 4, cadres: 3, ouvriers: -3, employes: -2 } },
-        { name: "CGT (Usine Nord)", type: "Syndicat", effects: { ouvriers: 5, employes: 2, cadres: -2, artisans: -2 } },
-        { name: "FNSEA (Salon Agri)", type: "Syndicat", effects: { agriculteurs: 6, retraites: 1, cadres: -1 } },
-        { name: "Marseille (Meeting Public)", type: "Ville", effects: { inactifs: 2, ouvriers: 2, intermediaires: 1 } },
-        { name: "Versailles (Meeting Public)", type: "Ville", effects: { retraites: 3, cadres: 2, inactifs: -2 } }
+        { name: "Paris (La Défense)", type: "Business", effects: { cadres: 5, artisans: 2, ouvriers: -4 } },
+        { name: "Hénin-Beaumont", type: "Bassin Minier", effects: { ouvriers: 6, employes: 3, cadres: -5 } },
+        { name: "Salon de l'Agriculture", type: "Corporation", effects: { agriculteurs: 8, retraites: 2, cadres: -2 } },
+        { name: "Université Sorbonne", type: "Jeunesse", effects: { inactifs: 7, cadres: 2, retraites: -4 } },
+        { name: "Lyon (Centre-Ville)", type: "Métropole", effects: { intermediaires: 4, cadres: 3, agriculteurs: -2 } },
+        { name: "Siège MEDEF", type: "Syndicat Patronal", effects: { artisans: 5, cadres: 4, employes: -5, ouvriers: -5 } },
+        { name: "Usine ArcelorMittal", type: "Syndicat Ouvrier", effects: { ouvriers: 6, employes: 2, artisans: -3, cadres: -3 } },
+        { name: "Nice (Promenade)", type: "Ville Sud", effects: { retraites: 6, artisans: 3, inactifs: -2 } },
+        { name: "Rennes", type: "Ville Ouest", effects: { inactifs: 4, intermediaires: 3, retraites: -2 } },
+        { name: "Strasbourg (Parlement)", type: "Europe", effects: { cadres: 5, intermediaires: 2, ouvriers: -4 } },
+        { name: "Toulouse", type: "Ville Sud-Ouest", effects: { intermediaires: 4, inactifs: 3, retraites: -1 } },
+        { name: "Siège Force Ouvrière", type: "Syndicat", effects: { employes: 5, ouvriers: 3, cadres: -3 } },
+        { name: "Bordeaux", type: "Bastion Droite", effects: { retraites: 5, cadres: 4, inactifs: -3 } },
+        { name: "Marseille (Vieux Port)", type: "Ville Populaire", effects: { inactifs: 4, ouvriers: 3, cadres: -2 } },
+        { name: "Clermont-Ferrand", type: "Centre France", effects: { agriculteurs: 3, artisans: 3, cadres: -1 } }
     ];
 
     // --- 2. GAME STATE ---
     let gameState = {
         candidate: null,
         turn: 0,
-        isMeetingTurn: false
+        isMeetingTurn: false,
+        history: [] // To store choices
     };
 
-    // --- 3. LOGIC & FUNCTIONS ---
+    // --- 3. LOGIC ---
 
     function initSelectionScreen() {
         const container = document.getElementById('candidates-container');
         CANDIDATES.forEach(c => {
             let div = document.createElement('div');
             div.className = 'candidate-card glass-panel';
-            div.innerHTML = `<h3 class="gold-text">${c.name}</h3><p>${c.party}</p>`;
+            div.innerHTML = `<h4 class="gold-text">${c.name}</h4><p style="font-size:0.8em; opacity:0.8;">${c.party}</p>`;
             div.onclick = () => startGame(c);
             container.appendChild(div);
         });
@@ -332,8 +466,20 @@
 
     function startGame(candidate) {
         gameState.candidate = candidate;
+        gameState.turn = 0;
+        gameState.isMeetingTurn = false;
+
+        // Apply Candidate Base Stats
+        for (let key in candidate.baseStats) {
+            if (POPULATION[key]) {
+                POPULATION[key].score = candidate.baseStats[key];
+            }
+        }
+
         document.getElementById('selection-screen').classList.remove('active');
+        document.getElementById('results-screen').classList.remove('active'); // Reset if replaying
         document.getElementById('game-screen').classList.add('active');
+        
         updateUI();
         loadNextStep();
     }
@@ -345,8 +491,7 @@
             totalScore += POPULATION[key].score * POPULATION[key].weight;
             totalWeight += POPULATION[key].weight;
         }
-        // Normalisation simple pour l'affichage (fictif pour le jeu)
-        return (totalScore / totalWeight).toFixed(1);
+        return (totalScore / totalWeight); // Returns float, not string
     }
 
     function updateUI() {
@@ -360,7 +505,7 @@
             row.innerHTML = `
                 <div style="display:flex; justify-content:space-between;">
                     <span>${pop.label}</span>
-                    <span>${pop.score}%</span>
+                    <span class="gold-text">${Math.round(pop.score)}%</span>
                 </div>
                 <div class="progress-bar"><div class="progress-fill" style="width:${pop.score}%"></div></div>
             `;
@@ -369,19 +514,20 @@
 
         // Update Global
         let score = calculateGlobalScore();
-        document.getElementById('global-score-big').innerText = score + "%";
-        document.getElementById('prestige-display').innerText = "SCORE: " + score + "%";
+        let displayScore = score.toFixed(1) + "%";
         
-        // Update Turn info
-        document.getElementById('date-display').innerText = `SEMAINE ${gameState.turn + 1} / 10`;
+        document.getElementById('global-score-big').innerText = displayScore;
+        document.getElementById('prestige-display').innerText = gameState.candidate.name.toUpperCase();
+        
+        // Turn info
+        let displayTurn = Math.min(gameState.turn + 1, EVENTS.length);
+        document.getElementById('date-display').innerText = `ÉVÈNEMENT ${displayTurn} / ${EVENTS.length}`;
     }
 
     function applyEffects(effects) {
-        // Applique les modificateurs aux catégories
         for (let key in effects) {
             if (POPULATION[key]) {
                 POPULATION[key].score += effects[key];
-                // Cap entre 0 et 100
                 if(POPULATION[key].score > 100) POPULATION[key].score = 100;
                 if(POPULATION[key].score < 0) POPULATION[key].score = 0;
             }
@@ -390,23 +536,38 @@
     }
 
     function loadNextStep() {
+        // END GAME CHECK
+        if (gameState.turn >= EVENTS.length) {
+            endGame();
+            return;
+        }
+
         const titleEl = document.getElementById('event-title');
         const descEl = document.getElementById('event-desc');
         const choicesEl = document.getElementById('choices-container');
+        const tagEl = document.getElementById('event-tag');
         choicesEl.innerHTML = '';
 
         if (gameState.isMeetingTurn) {
-            // MODE MEETING
+            // --- MEETING PHASE ---
             titleEl.innerText = "ORGANISATION DE MEETING";
-            descEl.innerText = "Vos conseillers attendent vos directives. Où souhaitez-vous organiser votre grand rassemblement cette semaine ?";
+            descEl.innerText = "Vos équipes logistiques ont identifié 5 opportunités pour un rassemblement cette semaine. Choisissez votre cible stratégique.";
+            tagEl.innerText = "STRATÉGIE";
+            tagEl.style.background = "var(--white-off)";
+            tagEl.style.color = "var(--navy-deep)";
+            
             document.getElementById('agenda-current').innerText = "Meeting";
-            document.getElementById('agenda-next').innerText = "Evènement";
+            document.getElementById('agenda-next').innerText = "Actualité";
 
-            MEETING_TARGETS.forEach(target => {
+            // Random Pick 5 meetings
+            const shuffled = [...MEETING_TARGETS].sort(() => 0.5 - Math.random());
+            const selectedMeetings = shuffled.slice(0, 5);
+
+            selectedMeetings.forEach(target => {
                 let btn = document.createElement('button');
                 btn.className = 'choice-btn';
                 
-                // Calculer les impacts pour l'affichage (preview)
+                // Visual helpers
                 let bonus = []; 
                 let malus = [];
                 for(let k in target.effects) {
@@ -414,28 +575,32 @@
                     else malus.push(POPULATION[k].label);
                 }
 
-                btn.innerHTML = `<strong>${target.name}</strong> <span style="opacity:0.7">(${target.type})</span><br>
-                <span class="tag-bonus">▲ ${bonus.join(', ')}</span> 
-                <span class="tag-malus">▼ ${malus.join(', ')}</span>`;
+                btn.innerHTML = `<strong>${target.name}</strong> <span style="font-size:0.8em; opacity:0.7">| ${target.type}</span><br>
+                <div style="margin-top:5px;">
+                   ${bonus.length > 0 ? `<span class="tag-bonus">▲ ${bonus[0]}...</span>` : ''}
+                   ${malus.length > 0 ? `<span class="tag-malus">▼ ${malus[0]}...</span>` : ''}
+                </div>`;
                 
                 btn.onclick = () => {
                     applyEffects(target.effects);
                     gameState.isMeetingTurn = false;
-                    gameState.turn++;
+                    gameState.turn++; // Next Event
                     loadNextStep();
                 };
                 choicesEl.appendChild(btn);
             });
 
         } else {
-            // MODE QUESTION / EVENEMENT
-            // Pour le prototype, on boucle sur les 2 questions
-            let eventIndex = gameState.turn % EVENTS.length;
-            let evt = EVENTS[eventIndex];
+            // --- EVENT PHASE ---
+            let evt = EVENTS[gameState.turn];
 
             titleEl.innerText = evt.title;
             descEl.innerText = evt.desc;
-            document.getElementById('agenda-current').innerText = "Evènement";
+            tagEl.innerText = "URGENT";
+            tagEl.style.background = "var(--gold)";
+            tagEl.style.color = "var(--navy-deep)";
+
+            document.getElementById('agenda-current').innerText = "Crise / Média";
             document.getElementById('agenda-next').innerText = "Meeting";
 
             evt.choices.forEach(choice => {
@@ -444,13 +609,44 @@
                 btn.innerText = choice.text;
                 btn.onclick = () => {
                     applyEffects(choice.effects);
-                    gameState.isMeetingTurn = true; // Prochain tour = meeting
-                    // On n'incrémente pas le tour ici, le meeting est la 2eme partie de la sequence
+                    gameState.isMeetingTurn = true; // Switch to meeting
                     loadNextStep();
                 };
                 choicesEl.appendChild(btn);
             });
         }
+    }
+
+    function endGame() {
+        document.getElementById('game-screen').classList.remove('active');
+        document.getElementById('results-screen').classList.add('active');
+        
+        const finalScore = calculateGlobalScore();
+        document.getElementById('result-candidate-name').innerText = gameState.candidate.name;
+        document.getElementById('final-score').innerText = finalScore.toFixed(2) + "%";
+
+        let analysis = "";
+        if(finalScore > 50) analysis = "INCROYABLE ! Vous êtes élu dès le premier tour (ou quasi assuré de l'être au second). Un triomphe historique qui marquera la Vème République.";
+        else if(finalScore > 22) analysis = "QUALIFIÉ ! Vous accédez au second tour en position de force. Votre stratégie de ciblage a payé.";
+        else if(finalScore > 15) analysis = "HONORABLE. Vous faites un score solide et pesez dans le débat, mais l'Élysée restera un rêve pour cette fois.";
+        else if(finalScore > 5) analysis = "DÉCEPTION. Vous remboursez vos frais de campagne, mais votre parti sort affaibli de cette épreuve.";
+        else analysis = "CATASTROPHE. Un score humiliant. Votre carrière politique est probablement terminée.";
+
+        document.getElementById('result-text').innerText = analysis;
+
+        // Breakdown
+        const bd = document.getElementById('final-breakdown');
+        bd.innerHTML = '';
+        // Sort categories by score
+        let sortedKeys = Object.keys(POPULATION).sort((a,b) => POPULATION[b].score - POPULATION[a].score);
+        
+        sortedKeys.forEach(key => {
+            let div = document.createElement('div');
+            div.style.borderBottom = "1px solid rgba(255,255,255,0.1)";
+            div.style.padding = "5px 0";
+            div.innerHTML = `<span class="gold-text">${Math.round(POPULATION[key].score)}%</span> ${POPULATION[key].label}`;
+            bd.appendChild(div);
+        });
     }
 
     // Init
