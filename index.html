@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RÉPUBLIQUE - 2017 Ultimate</title>
+    <title>RÉPUBLIQUE - La Campagne de 2017</title>
     <style>
         :root {
-            --navy-deep: #051024; /* Bleu Présidentiel */
-            --navy-light: #162447;
+            --navy-deep: #051024; /* Bleu Nuit Présidentiel */
+            --navy-light: #1c2e4a;
             --gold: #d4af37;
             --gold-dim: #8a7329;
-            --white: #e0e0e0;
-            --glass: rgba(22, 36, 71, 0.95);
+            --white: #e8e8e8;
+            --glass: rgba(20, 30, 50, 0.95);
             --border: 1px solid rgba(212, 175, 55, 0.3);
+            --shadow: 0 10px 30px rgba(0,0,0,0.7);
         }
 
         body {
@@ -22,157 +23,159 @@
             margin: 0;
             height: 100vh;
             overflow: hidden;
-            background-image: radial-gradient(circle at 50% 40%, #1a1a2e 0%, #051024 90%);
+            background-image: radial-gradient(circle at 50% 30%, #162447 0%, #020617 90%);
         }
 
-        /* --- UI KIT --- */
+        /* --- UI HELPERS --- */
         .gold { color: var(--gold); }
         .bold { font-weight: 700; }
         
         .panel {
             background: var(--glass);
             border: var(--border);
-            border-radius: 6px;
+            border-radius: 4px;
             padding: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            box-shadow: var(--shadow);
             display: flex; flex-direction: column;
         }
-
-        button.btn-primary {
-            background: linear-gradient(135deg, var(--navy-light) 0%, #000 100%);
-            border: 1px solid var(--gold-dim);
-            color: var(--gold);
-            padding: 12px 20px;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-        button.btn-primary:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.1); }
 
         /* --- SCREENS --- */
         .screen { display: none; height: 100vh; width: 100vw; flex-direction: column; }
         .active { display: flex; }
 
         /* SELECTION */
-        #selection-screen { align-items: center; justify-content: center; overflow-y: auto; padding: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; width: 90%; max-width: 1000px; margin-top: 20px;}
-        .card { 
-            padding: 20px; cursor: pointer; border: 1px solid transparent; text-align: center; 
-            background: rgba(255,255,255,0.03); transition: 0.2s;
+        #selection-screen { align-items: center; justify-content: center; padding: 20px; }
+        .grid { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 15px; width: 90%; max-width: 1100px; max-height: 80vh; overflow-y: auto;
+            padding-right: 10px;
         }
-        .card:hover { border-color: var(--gold); transform: translateY(-5px); background: rgba(212, 175, 55, 0.1); }
+        .card { 
+            padding: 20px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); 
+            text-align: center; background: rgba(255,255,255,0.02); transition: 0.3s;
+        }
+        .card:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.15); transform: translateY(-5px); }
 
         /* GAMEBOARD */
         #game-screen {
             display: grid;
-            grid-template-columns: 260px 1fr 260px;
-            grid-template-rows: 60px 1fr 80px;
+            grid-template-columns: 280px 1fr 280px;
+            grid-template-rows: 60px 1fr 70px;
             gap: 15px; padding: 15px; box-sizing: border-box;
         }
 
         header {
             grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: var(--border); padding: 0 10px; background: rgba(5, 16, 36, 0.9);
+            border-bottom: var(--border); padding: 0 20px; background: rgba(5, 16, 36, 0.95);
         }
 
-        /* STATS BARS */
-        .stat-line { margin-bottom: 8px; font-size: 0.75em; }
-        .bar-container { background: rgba(255,255,255,0.05); height: 6px; margin-top: 3px; border-radius: 2px; }
-        .bar-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        /* STATS & BARS */
+        .stat-line { margin-bottom: 10px; font-size: 0.8em; }
+        .bar-container { background: rgba(255,255,255,0.05); height: 6px; margin-top: 4px; border-radius: 2px; overflow: hidden;}
+        .bar-fill { height: 100%; background: var(--gold); width: 0%; transition: width 0.6s ease-out; }
 
-        /* CENTER */
+        /* CENTER EVENT AREA */
         #center-zone { position: relative; display: flex; align-items: center; justify-content: center; }
-        .event-card { width: 100%; max-width: 700px; max-height: 80vh; overflow-y: auto; z-index: 10; }
-        
-        /* CHOICES */
-        .choice-btn {
-            width: 100%; padding: 15px; margin: 10px 0;
-            background: rgba(255,255,255,0.03); border-left: 3px solid var(--gold-dim);
-            color: #ccc; text-align: left; cursor: pointer; transition: 0.2s; font-size: 0.95em;
+        .event-card { 
+            width: 100%; max-width: 750px; max-height: 85vh; overflow-y: auto; 
+            padding: 30px; border-top: 4px solid var(--gold);
         }
-        .choice-btn:hover { background: rgba(212, 175, 55, 0.1); border-left-color: var(--gold); color: #fff; transform: translateX(5px); }
-        .choice-italic { font-style: italic; opacity: 0.7; font-size: 0.9em; margin-bottom: 5px; display: block;}
+        
+        /* CHOICES BUTTONS */
+        .choice-btn {
+            width: 100%; padding: 18px; margin: 12px 0;
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.0) 100%);
+            border: 1px solid rgba(255,255,255,0.1); border-left: 3px solid var(--gold-dim);
+            color: #ddd; text-align: left; cursor: pointer; transition: 0.2s; 
+            font-size: 1em; position: relative;
+        }
+        .choice-btn:hover { 
+            background: rgba(212, 175, 55, 0.1); border-color: var(--gold); 
+            color: #fff; transform: translateX(5px); 
+        }
+        .spec-tag {
+            font-size: 0.7em; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--gold); display: block; margin-bottom: 5px; opacity: 0.8;
+        }
 
         /* END SCREEN */
         #results-screen { align-items: center; justify-content: center; text-align: center; }
-        .end-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin: 20px 0; font-size: 0.9em;}
+        .result-box { max-width: 600px; padding: 40px; background: var(--navy-light); border: 2px solid var(--gold); }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
 
     </style>
 </head>
 <body>
 
 <div id="selection-screen" class="screen active">
-    <div style="text-align:center;">
-        <h1 class="gold" style="font-size: 2.5em; letter-spacing: 5px; margin-bottom: 5px;">RÉPUBLIQUE</h1>
-        <span style="text-transform:uppercase; font-size: 0.9em; opacity: 0.7;">Simulateur de Campagne 2017</span>
+    <div style="text-align:center; margin-bottom: 20px;">
+        <h1 class="gold" style="font-size: 3em; letter-spacing: 8px; margin: 0;">RÉPUBLIQUE</h1>
+        <span style="text-transform:uppercase; font-size: 0.9em; letter-spacing: 3px; opacity: 0.7;">Le Jeu de la Présidentielle 2017</span>
     </div>
     <div class="grid" id="roster"></div>
 </div>
 
 <div id="game-screen" class="screen">
     <header>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-size:1.2em;">🏛️</span>
-            <span class="bold">ÉLYSÉE 2017</span>
+        <div style="display:flex; align-items:center; gap:15px;">
+            <span style="font-size:1.5em;">🇫🇷</span>
+            <div style="display:flex; flex-direction:column;">
+                <span class="bold" style="letter-spacing:1px;">ÉLYSÉE 2017</span>
+                <span id="candidate-name" style="font-size:0.8em; opacity:0.7; color:var(--gold);">...</span>
+            </div>
         </div>
-        <div id="turn-badge" class="gold bold">SEMAINE 1 / 20</div>
-        <div id="candidate-name" style="opacity: 0.7;">Candidat</div>
+        <div id="date-display" class="gold bold" style="font-size: 1.1em;">DATE</div>
+        <div style="font-size:0.9em; opacity:0.6;">TOUR <span id="turn-count">1</span>/30</div>
     </header>
 
     <div class="panel">
-        <h4 class="gold" style="margin: 0 0 15px 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom:10px;">SONDAGES CSP</h4>
-        <div id="polls-container" style="overflow-y: auto; flex:1;"></div>
+        <h4 class="gold" style="margin: 0 0 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom:10px;">INTENTIONS DE VOTE</h4>
+        <div id="polls-container" style="overflow-y: auto; flex:1; padding-right:5px;"></div>
     </div>
 
     <div id="center-zone">
-        <div class="panel event-card" id="event-panel">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                <span id="event-type" style="background:var(--gold); color:black; padding:2px 8px; font-size:0.7em; font-weight:bold; border-radius:2px;">ACTUALITÉ</span>
-                <span id="event-date" style="font-size:0.8em; opacity:0.6;">DATE</span>
-            </div>
-            <h2 id="event-title" class="gold" style="margin-top:0;">Titre de l'évènement</h2>
-            <p id="event-desc" style="line-height: 1.6; font-size: 1.05em; margin-bottom: 25px;">Description...</p>
+        <div class="panel event-card">
+            <span id="event-badge" style="background:var(--gold); color:#000; padding:3px 8px; font-size:0.7em; font-weight:bold; border-radius:2px; display:inline-block; margin-bottom:10px;">ACTUALITÉ</span>
+            <h2 id="event-title" class="gold" style="margin-top:0; font-size: 1.8em;">Titre</h2>
+            <p id="event-desc" style="line-height: 1.6; font-size: 1.1em; margin-bottom: 30px; color: #ccc;">Description...</p>
             <div id="choices-container"></div>
         </div>
     </div>
 
     <div class="panel" style="align-items:center; justify-content:center;">
-        <span style="font-size:0.8em; text-transform:uppercase; opacity:0.7;">Intentions de vote</span>
-        <div id="main-score" style="font-size: 4em; font-weight: 800; color: var(--gold); margin: 10px 0;">0%</div>
-        <div id="trend-indicator" style="font-size: 0.9em;">--</div>
+        <span style="font-size:0.9em; text-transform:uppercase; opacity:0.7; letter-spacing:1px;">Score National</span>
+        <div id="main-score" style="font-size: 4.5em; font-weight: 800; color: var(--gold); margin: 15px 0; text-shadow: 0 0 20px rgba(212,175,55,0.3);">0%</div>
+        <div id="trend-indicator" style="font-size: 1em; color:var(--white);">--</div>
     </div>
 
-    <div class="panel" style="grid-column: 1 / -1; flex-direction: row; justify-content: space-around; align-items: center; opacity: 0.8;">
+    <div class="panel" style="grid-column: 1 / -1; flex-direction: row; justify-content: space-evenly; align-items: center; opacity: 0.6; font-size: 0.9em;">
         <span>📢 MEETING</span>
         <span>📺 MÉDIAS</span>
-        <span>💰 BUDGET</span>
+        <span>💰 FINANCES</span>
+        <span>⚖️ JUSTICE</span>
         <span>👥 QG</span>
     </div>
 </div>
 
 <div id="results-screen" class="screen">
-    <h1 class="gold" style="letter-spacing: 5px;">RÉSULTATS</h1>
-    
-    <div class="panel" style="width: 500px; max-width:90%;">
-        <div id="final-score" style="font-size: 5em; font-weight: 800; color: var(--gold);">00.0%</div>
-        <h3 id="final-status">STATUT</h3>
-        <p id="final-desc" style="font-style:italic; line-height:1.5;">...</p>
-        
-        <div style="border-top:1px solid rgba(255,255,255,0.1); margin-top:20px; padding-top:10px;">
-            <small>Détail par catégorie :</small>
-            <div class="end-stat-grid" id="final-grid"></div>
-        </div>
+    <div class="result-box">
+        <h1 class="gold" style="margin-top:0;">RÉSULTATS DU 1er TOUR</h1>
+        <div id="final-score" style="font-size: 5em; font-weight: 800; color: #fff;">00.0%</div>
+        <h2 id="final-status" style="color:var(--gold); margin-bottom: 20px;">STATUT</h2>
+        <p id="final-desc" style="font-style:italic; line-height:1.6; opacity: 0.9;">...</p>
+        <button onclick="location.reload()" style="margin-top:30px; padding:15px 30px; background:var(--gold); border:none; font-weight:bold; cursor:pointer; text-transform:uppercase;">Rejouer l'Histoire</button>
     </div>
-    
-    <button class="btn-primary" onclick="location.reload()" style="margin-top:20px;">NOUVELLE CAMPAGNE</button>
 </div>
 
 <script>
     // --- CONFIGURATION ---
-    const MAX_TURNS = 20; 
-    const IMPACT_REDUCER = 0.35; // Facteur pour réduire l'impact des réponses (0.35 = 35% de la puissance originale)
-
+    // Le jeu suit strictement les 30 events + meetings insérés
+    const IMPACT_FACTOR = 0.20; // Facteur d'équilibrage global (pour ne pas faire +20% en un tour)
+    
     // --- DONNEES POPULATION ---
     const POPULATION = {
         agriculteurs: { label: "Agriculteurs", weight: 1.5, score: 0 },
@@ -185,7 +188,8 @@
         inactifs: { label: "Jeunes/Inactifs", weight: 16.0, score: 0 }
     };
 
-    // --- CANDIDATS (Stats Janvier 2017 - Somme ~100%) ---
+    // --- CANDIDATS (Stats Janvier 2017) ---
+    // Total ~100%
     const CANDIDATES = [
         { id: 'macron', name: "E. MACRON", party: "En Marche!", stats: { agriculteurs: 15, artisans: 15, cadres: 32, intermediaires: 26, employes: 18, ouvriers: 12, retraites: 22, inactifs: 22 } },
         { id: 'fillon', name: "F. FILLON", party: "Les Républicains", stats: { agriculteurs: 45, artisans: 35, cadres: 30, intermediaires: 18, employes: 10, ouvriers: 5, retraites: 42, inactifs: 8 } },
@@ -200,105 +204,340 @@
         { id: 'cheminade', name: "J. CHEMINADE", party: "S&P", stats: { agriculteurs: 0, artisans: 0, cadres: 0, intermediaires: 0, employes: 0, ouvriers: 0, retraites: 0, inactifs: 0 } }
     ];
 
-    // --- QUESTIONS & CHOIX (Dynamiques) ---
-    // Chaque event a des choix spécifiques.
-    const EVENTS = [
+    // --- EVENTS HISTORIQUES (ORDRE CHRONOLOGIQUE) ---
+    // Les réponses spécifiques ont des valeurs doublées (~8 vs ~4)
+    const SCENARIO_EVENTS = [
         {
-            title: "Le Penelope Gate",
-            desc: "Le Canard Enchaîné révèle que l'épouse de Fillon a perçu 500.000€ d'argent public. C'est la panique.",
+            date: "6 Avril 2016", title: "Lancement d'En Marche !", desc: "Emmanuel Macron lance son mouvement à Amiens.",
             choices: [
-                { txt: "Crier au complot et dénoncer le 'Cabinet Noir' de l'Élysée.", cond: 'fillon', eff: { retraites: 3, cadres: -5, ouvriers: -5 } },
-                { txt: "Attaquer frontalement : 'Il faut rendre l'argent !'", eff: { ouvriers: 4, inactifs: 3, cadres: -2 } },
-                { txt: "Rester prudent : 'Laissons la justice faire son travail.'", eff: { cadres: 2, retraites: 1 } },
-                { txt: "Dénoncer tous les privilèges et la corruption du système.", eff: { inactifs: 4, ouvriers: 3, artisans: 2 } }
+                { txt: "Stratégie du dédain : 'Aventure individuelle vouée à l'échec.'", eff: { cadres: -2, retraites: 2 } },
+                { txt: "Stratégie de la trahison : 'On ne peut pas servir l'État et sa boutique.'", eff: { retraites: 3, intermediaires: -2 } },
+                { txt: "Stratégie de la nouveauté : 'Les vieux partis sont morts.'", eff: { cadres: 3, inactifs: 3, retraites: -3 } },
+                { cond: 'macron', txt: "[MACRON] 'Je veux libérer l'énergie de ce pays !'", eff: { cadres: 6, inactifs: 6, ouvriers: -2 } }, /* Specifique */
+                { cond: 'lepen', txt: "[LE PEN] 'En marche vers la banque !'", eff: { ouvriers: 8, employes: 6, cadres: -6 } },
+                { cond: 'fillon', txt: "[FILLON] 'Il faut de l'expérience, pas de l'enthousiasme juvénile.'", eff: { retraites: 8, cadres: -2 } }
             ]
         },
         {
-            title: "La Gifle de Valls",
-            desc: "Manuel Valls reçoit une gifle lors d'un déplacement en Bretagne. La violence politique monte.",
+            date: "30 Août 2016", title: "Démission de Bercy", desc: "Macron quitte le gouvernement pour se lancer.",
             choices: [
-                { txt: "Condamner fermement : 'La violence n'a pas sa place en démocratie'.", eff: { retraites: 2, cadres: 2 } },
-                { txt: "Ironiser : 'C'est le retour de bâton de sa politique'.", eff: { inactifs: 3, ouvriers: 2, cadres: -3 } },
-                { txt: "Dire qu'on comprend la colère du peuple, sans cautionner le geste.", eff: { ouvriers: 2, intermediaires: 1 } }
+                { txt: "Clarification : 'Il va devoir défendre son bilan.'", eff: { retraites: 2, cadres: -1 } },
+                { txt: "Chaos : 'C'est une désertion irresponsable.'", eff: { retraites: 3, agriculteurs: 2 } },
+                { txt: "Liberté : 'Il va à la rencontre des Français.'", eff: { cadres: 3, intermediaires: 2 } },
+                { cond: 'fillon', txt: "[FILLON] 'On ne part pas comme un voleur.'", eff: { retraites: 6, agriculteurs: 4 } },
+                { cond: 'melenchon', txt: "[MÉLENCHON] 'Bon débarras le petit banquier !'", eff: { ouvriers: 6, inactifs: 6 } },
+                { cond: 'macron', txt: "[MACRON] 'Je veux être libre de proposer un nouveau chemin.'", eff: { cadres: 6, intermediaires: 4 } }
             ]
         },
         {
-            title: "Meeting Hologramme",
-            desc: "Un candidat utilise un hologramme pour être à deux endroits à la fois. Un coup de com' technologique.",
+            date: "16 Nov 2016", title: "Candidature Officielle", desc: "Macron se déclare à Bobigny.",
             choices: [
-                { txt: "Utiliser cette technologie (ou saluer l'audace).", eff: { inactifs: 5, cadres: 1 } },
-                { txt: "Moquer le 'gadget' qui cache le vide du programme.", eff: { retraites: 2, ouvriers: 1 } },
-                { txt: "Ignorer et parler du terrain, de la vraie vie.", eff: { agriculteurs: 3, artisans: 2 } }
+                { txt: "Bilan : 'Il est co-auteur du quinquennat Hollande.'", eff: { ouvriers: 2, employes: 2 } },
+                { txt: "Bulle : 'Une bulle médiatique qui va éclater.'", eff: { retraites: 3, agriculteurs: 2 } },
+                { txt: "Alternative : 'La 3ème voie nécessaire.'", eff: { cadres: 3, intermediaires: 3 } },
+                { cond: 'lepen', txt: "[LE PEN] 'Bobigny ? Quelle indécence pour ce mondialiste !'", eff: { ouvriers: 7, employes: 6 } },
+                { cond: 'fillon', txt: "[FILLON] 'La politique n'est pas un casting.'", eff: { retraites: 7, cadres: 2 } },
+                { cond: 'cheminade', txt: "[CHEMINADE] 'Je défends le Made In France, lui la City.'", eff: { ouvriers: 4 } }
             ]
         },
         {
-            title: "Polémique 'Colonisation'",
-            desc: "Un candidat qualifie la colonisation de 'Crime contre l'humanité'. La droite s'indigne.",
+            date: "20 Nov 2016", title: "Sarkozy éliminé", desc: "Le 1er tour de la primaire de la droite sort l'ancien président.",
             choices: [
-                { txt: "Assumer : 'Il faut regarder l'Histoire en face'.", eff: { inactifs: 6, retraites: -6, agriculteurs: -4 } },
-                { txt: "S'excuser pour ne pas blesser les rapatriés.", eff: { retraites: 3, inactifs: -3 } },
-                { txt: "Hurler à la honte et à la détestation de la France.", eff: { retraites: 5, agriculteurs: 4, cadres: -2 } },
-                { txt: "Nuancer : Des crimes, mais aussi des choses positives.", eff: { cadres: 2, intermediaires: 2 } }
+                { txt: "Page tournée : 'Désir de renouvellement.'", eff: { cadres: 2, intermediaires: 2 } },
+                { txt: "Hommage : 'Je salue son parcours.'", eff: { retraites: 3, agriculteurs: 2 } },
+                { txt: "Dégagisme : 'Un de moins ! Au suivant.'", eff: { inactifs: 3, ouvriers: 3 } },
+                { cond: 'fillon', txt: "[FILLON] 'Je souhaite bonne chance à la France.' (Digne)", eff: { retraites: 8, cadres: 4 } },
+                { cond: 'melenchon', txt: "[MÉLENCHON] 'Champagne ! On n'a pas oublié le Kärcher !'", eff: { inactifs: 8, ouvriers: 6 } },
+                { cond: 'macron', txt: "[MACRON] 'La menace d'un retour en arrière s'éloigne.'", eff: { cadres: 5, intermediaires: 4 } }
             ]
         },
         {
-            title: "Usine Whirlpool",
-            desc: "L'usine d'Amiens menace de fermer. C'est le symbole de la désindustrialisation.",
+            date: "20 Nov 2016", title: "Surprise Fillon", desc: "François Fillon écrase tout le monde avec 44%.",
             choices: [
-                { txt: "Aller parler aux ouvriers sur le parking, au milieu des fumées.", eff: { ouvriers: 6, employes: 3, cadres: -3 } },
-                { txt: "Rencontrer l'intersyndicale à la Chambre de Commerce.", eff: { cadres: 3, intermediaires: 1 } },
-                { txt: "Promettre la nationalisation si nécessaire.", eff: { ouvriers: 4, inactifs: 3, cadres: -4 } }
+                { txt: "Analyse : 'Retour de la droite traditionnelle.'", eff: { cadres: 2, retraites: 2 } },
+                { txt: "Dynamique : 'Une vague de fond invisible.'", eff: { agriculteurs: 3, retraites: 3 } },
+                { txt: "Alerte : 'Son programme est brutal.'", eff: { ouvriers: 3, employes: 3 } },
+                { cond: 'macron', txt: "[MACRON] 'Je ne laisserai pas la droite se radicaliser.'", eff: { cadres: 6, intermediaires: 4 } },
+                { cond: 'lepen', txt: "[LE PEN] 'C'est le thatchérisme, il va casser la Sécu.'", eff: { ouvriers: 8, employes: 8 } },
+                { cond: 'fillon', txt: "[FILLON] 'Les Français veulent la vérité.'", eff: { retraites: 10, agriculteurs: 8 } }
             ]
         },
         {
-            title: "Le Choc Bayrou",
-            desc: "François Bayrou propose une alliance au centre. Acceptez-vous la main tendue ?",
+            date: "27 Nov 2016", title: "Victoire de Fillon", desc: "Fillon bat Juppé. Il est le grand favori.",
             choices: [
-                { txt: "Accepter l'alliance pour crédibiliser la démarche.", eff: { cadres: 5, intermediaires: 3, retraites: 2, ouvriers: -2 } },
-                { txt: "Refuser : 'Pas d'arrangement avec la vieille politique'.", eff: { inactifs: 3, ouvriers: 2 } },
-                { txt: "Critiquer l'opportunisme de Bayrou.", eff: { artisans: 2, agriculteurs: 2 } }
+                { txt: "Rassemblement : 'S'unir derrière le vainqueur.'", eff: { retraites: 4 } },
+                { txt: "Cible : 'Le candidat de la purge sociale.'", eff: { ouvriers: 3, employes: 3 } },
+                { txt: "Doute : 'Victoire d'un clan radicalisé.'", eff: { cadres: 2, inactifs: 2 } },
+                { cond: 'melenchon', txt: "[MÉLENCHON] 'C'est le Père Fouettard !'", eff: { inactifs: 6, ouvriers: 6 } },
+                { cond: 'lepen', txt: "[LE PEN] 'Délire ultralibéral, aubaine pour nous.'", eff: { ouvriers: 7, employes: 7 } },
+                { cond: 'macron', txt: "[MACRON] 'Je suis le seul progressiste face à la réaction.'", eff: { cadres: 7, intermediaires: 5 } }
             ]
         },
         {
-            title: "Grand Débat TF1",
-            desc: "Les 5 favoris sont sur le plateau. C'est le moment de placer une 'punchline'.",
+            date: "27 Nov 2016", title: "Programme Radical", desc: "Fillon veut supprimer 500.000 fonctionnaires.",
             choices: [
-                { txt: "Attaquer Fillon/Le Pen sur les affaires judiciaires.", eff: { cadres: 3, inactifs: 2, retraites: -2 } },
-                { txt: "Se poser en victime du système médiatique.", eff: { ouvriers: 3, artisans: 3, cadres: -3 } },
-                { txt: "Rester calme et détailler le chiffrage du programme.", eff: { cadres: 4, retraites: 2 } },
-                { txt: "Sortir une phrase culte ('Pudeur de gazelle', 'Poudre de perlimpinpin').", eff: { inactifs: 4, intermediaires: 2 } }
+                { txt: "Terreur : 'Destruction des services publics.'", eff: { employes: 4, intermediaires: 3 } },
+                { txt: "Réalisme : 'L'État vit au-dessus de ses moyens.'", eff: { cadres: 3, artisans: 3 } },
+                { txt: "Impossibilité : 'La France sera dans la rue.'", eff: { ouvriers: 3, inactifs: 3 } },
+                { cond: 'hamon', txt: "[HAMON] 'Supprimer des infirmières ? C'est criminel.'", eff: { intermediaires: 8, employes: 6 } },
+                { cond: 'fillon', txt: "[FILLON] 'C'est un remède de cheval nécessaire.'", eff: { artisans: 8, cadres: 6 } },
+                { cond: 'poutou', txt: "[POUTOU] 'Toujours les mêmes qui trinquent !'", eff: { ouvriers: 8, inactifs: 6 } }
             ]
         },
         {
-            title: "Attentat Champs-Élysées",
-            desc: "Un policier est tué à 3 jours du vote. Le pays est sous le choc.",
+            date: "1 Déc 2016", title: "Hollande Renonce", desc: "Le président sortant jette l'éponge.",
             choices: [
-                { txt: "Exiger la fermeture immédiate des frontières.", eff: { retraites: 5, ouvriers: 3, cadres: -4, inactifs: -4 } },
-                { txt: "Appeler solennellement à l'unité nationale.", eff: { cadres: 3, intermediaires: 3, retraites: 2 } },
-                { txt: "Dénoncer le laxisme du gouvernement sortant.", eff: { artisans: 3, retraites: 2 } }
+                { txt: "Lucidité : 'Constat d'échec terrible.'", eff: { cadres: 2, artisans: 2 } },
+                { txt: "Compassion : 'Décision digne.'", eff: { retraites: 3 } },
+                { txt: "Opportunisme : 'La voie est libre.'", eff: { intermediaires: 3 } },
+                { cond: 'hamon', txt: "[HAMON] 'Je suis prêt à assumer.'", eff: { intermediaires: 6 } },
+                { cond: 'melenchon', txt: "[MÉLENCHON] 'Le capitaine quitte le navire coulé. Bon vent !'", eff: { ouvriers: 7, inactifs: 7 } },
+                { cond: 'macron', txt: "[MACRON] 'Je pense à l'homme avec émotion.'", eff: { retraites: 4, cadres: 3 } }
             ]
         },
         {
-            title: "Révélations Wikileaks",
-            desc: "Des emails de campagne sont piratés et diffusés massivement.",
+            date: "Déc 2016", title: "Mélenchon Solo", desc: "JLM refuse la primaire de la gauche.",
             choices: [
-                { txt: "Crier à l'ingérence russe.", eff: { cadres: 3, intermediaires: 1 } },
-                { txt: "Ne rien dire, laisser la rumeur s'éteindre.", eff: { retraites: 1 } },
-                { txt: "Utiliser ces fuites pour attaquer l'adversaire concerné.", eff: { inactifs: 3, ouvriers: 2 } }
+                { txt: "Indépendance : 'Pas de tambouille politicienne.'", eff: { inactifs: 3, ouvriers: 2 } },
+                { txt: "Unité : 'Il divise la gauche.'", eff: { intermediaires: 3 } },
+                { txt: "Cohérence : 'On ne débat pas avec ceux qu'on a combattus.'", eff: { inactifs: 3 } },
+                { cond: 'melenchon', txt: "[MÉLENCHON] 'Pourquoi pas un dîner de cons ? Je suis le candidat du peuple.'", eff: { inactifs: 8, ouvriers: 8 } },
+                { cond: 'hamon', txt: "[HAMON] 'L'égo tue l'écologie et le social.'", eff: { intermediaires: 5 } },
+                { cond: 'lepen', txt: "[LE PEN] 'Ces gauchistes sont incapables de s'entendre.'", eff: { ouvriers: 4 } }
             ]
         },
         {
-            title: "Dernière ligne droite",
-            desc: "Plus que 24h. Où jetez-vous vos dernières forces ?",
+            date: "Déc 2016", title: "Valls démissionne", desc: "Manuel Valls se lance dans la primaire.",
             choices: [
-                { txt: "Un grand direct sur Facebook/Youtube pour les jeunes.", eff: { inactifs: 6, intermediaires: 1, retraites: -3 } },
-                { txt: "Une interview au 20H de TF1 pour rassurer.", eff: { retraites: 4, cadres: 2 } },
-                { txt: "Un déplacement surprise dans une zone rurale oubliée.", eff: { agriculteurs: 5, artisans: 3 } }
+                { txt: "Trahison : 'Il est responsable du bilan.'", eff: { inactifs: 3, ouvriers: 3 } },
+                { txt: "Autorité : 'Une gauche républicaine et ferme.'", eff: { retraites: 3, cadres: 2 } },
+                { txt: "Rejet : 'Personne ne veut du 49.3.'", eff: { inactifs: 4, intermediaires: 2 } },
+                { cond: 'hamon', txt: "[HAMON] 'Je serai l'anti-Valls.'", eff: { inactifs: 6, intermediaires: 6 } },
+                { cond: 'melenchon', txt: "[MÉLENCHON] 'Tout sauf Valls.'", eff: { inactifs: 8, ouvriers: 6 } },
+                { cond: 'dupont', txt: "[DUPONT-AIGNAN] 'Je suis l'inverse de ce nabot.'", eff: { artisans: 4 } }
+            ]
+        },
+        {
+            date: "Déc 2016", title: "Montebourg & Hamon", desc: "Les frondeurs se lancent.",
+            choices: [
+                { txt: "Diversité : 'Un vrai débat d'idées.'", eff: { intermediaires: 2 } },
+                { txt: "Fronde : 'Règlement de comptes avec le gouvernement.'", eff: { cadres: 2 } },
+                { txt: "Utopie : 'Ils vendent du rêve.'", eff: { artisans: 3, retraites: 2 } },
+                { cond: 'lepen', txt: "[LE PEN] 'La démondialisation est une urgence !'", eff: { ouvriers: 6, artisans: 6 } },
+                { cond: 'hamon', txt: "[HAMON] 'Revenu universel, écologie... parlons du futur.'", eff: { inactifs: 8, intermediaires: 6 } },
+                { cond: 'macron', txt: "[MACRON] 'La gauche se parle à elle-même.'", eff: { cadres: 5, intermediaires: 3 } }
+            ]
+        },
+        {
+            date: "Fin 2016", title: "Sondages Fillon/Le Pen", desc: "Macron est vu comme une bulle.",
+            choices: [
+                { txt: "Fatalisme : 'Le match est plié.'", eff: { retraites: 2 } },
+                { txt: "Contestation : 'Les sondages se trompent (Brexit).' ", eff: { ouvriers: 3 } },
+                { txt: "Persévérance : 'Rien n'est joué.'", eff: { cadres: 2, intermediaires: 2 } },
+                { cond: 'lepen', txt: "[LE PEN] 'Mondialisation sauvage ou Patriotisme : Je suis prête.'", eff: { ouvriers: 7, employes: 7 } },
+                { cond: 'fillon', txt: "[FILLON] 'Je suis le seul vote utile. Macron est un hologramme.'", eff: { retraites: 8, agriculteurs: 6 } },
+                { cond: 'macron', txt: "[MACRON] 'Laissez-les commenter. On va les surprendre.'", eff: { cadres: 7, intermediaires: 6 } }
+            ]
+        },
+        {
+            date: "17 Jan 2017", title: "La Gifle", desc: "Valls giflé en Bretagne.",
+            choices: [
+                { txt: "Condamnation : 'Inacceptable en démocratie.'", eff: { retraites: 3, cadres: 2 } },
+                { txt: "Humour noir : 'Retour de bâton du 49.3.'", eff: { inactifs: 4, ouvriers: 2 } },
+                { txt: "Victimisation : 'On attaque la République.'", eff: { cadres: 2 } },
+                { cond: 'melenchon', txt: "[MÉLENCHON] 'Valls se prend des claques politiques depuis des mois.'", eff: { inactifs: 6, ouvriers: 4 } },
+                { cond: 'dupont', txt: "[DUPONT-AIGNAN] 'Quand on méprise le peuple...'", eff: { artisans: 5, ouvriers: 3 } }
+            ]
+        },
+        {
+            date: "22 Jan 2017", title: "Hamon en Tête", desc: "Surprise au 1er tour de la primaire gauche.",
+            choices: [
+                { txt: "Surprise : 'L'utopie bat le réalisme.'", eff: { inactifs: 3, intermediaires: 2 } },
+                { txt: "Sanction : 'Rejet définitif de Hollande/Valls.'", eff: { ouvriers: 3, employes: 3 } },
+                { txt: "Rassemblement : 'Deux gauches irréconciliables.'", eff: { cadres: 2 } },
+                { cond: 'hamon', txt: "[HAMON] 'Un désirable avenir se dessine.'", eff: { inactifs: 8, intermediaires: 6 } },
+                { cond: 'melenchon', txt: "[MÉLENCHON] 'Le capitaine (Valls) se félicite d'être seul à bord.'", eff: { inactifs: 6 } },
+                { cond: 'macron', txt: "[MACRON] 'La gauche se radicalise, venez chez moi.'", eff: { cadres: 6, intermediaires: 5 } }
+            ]
+        },
+        {
+            date: "24 Jan 2017", title: "LE PENELOPE GATE", desc: "Le Canard révèle l'emploi fictif présumé.",
+            choices: [
+                { txt: "Prudence : 'Respectons la présomption d'innocence.'", eff: { retraites: 3 } },
+                { txt: "Complot : 'Boule puante du pouvoir !'", eff: { artisans: 2, agriculteurs: 2 } },
+                { txt: "Morale : 'Une insulte à ceux qui travaillent.'", eff: { ouvriers: 4, employes: 4 } },
+                { cond: 'fillon', txt: "[FILLON] 'Scandalisé par la misogynie ! Ma femme travaille !'", eff: { retraites: 6, cadres: -4 } },
+                { cond: 'poutou', txt: "[POUTOU] 'Eux se gavent, nous on trime. Interdiction des licenciements !'", eff: { ouvriers: 8, inactifs: 6 } },
+                { cond: 'lepen', txt: "[LE PEN] 'UMP/PS = Corruption systémique. Dehors !'", eff: { ouvriers: 8, employes: 8 } }
+            ]
+        },
+        {
+            date: "25 Jan 2017", title: "Enquête du PNF", desc: "La justice s'active très vite.",
+            choices: [
+                { txt: "Accélération : 'Étonnamment rapide.'", eff: { artisans: 2 } },
+                { txt: "Gravité : 'Le Parquet a des éléments.'", eff: { cadres: 3 } },
+                { txt: "Transparence : 'Tout mettre sur la table.'", eff: { intermediaires: 3 } },
+                { cond: 'hamon', txt: "[HAMON] 'Pas d'immunité pour les voleurs.'", eff: { intermediaires: 6, inactifs: 4 } },
+                { cond: 'macron', txt: "[MACRON] 'La probité est une exigence. Je ne commente pas.'", eff: { cadres: 5, retraites: 3 } }
+            ]
+        },
+        {
+            date: "26 Jan 2017", title: "Fillon au 20H", desc: "'J'aime ma femme'.",
+            choices: [
+                { txt: "Émotion : 'Il joue la corde sensible.'", eff: { retraites: 2 } },
+                { txt: "Soutien : 'Combatif et sincère.'", eff: { agriculteurs: 3 } },
+                { txt: "Scepticisme : 'Il n'a rien prouvé.'", eff: { cadres: -2 } },
+                { cond: 'asselineau', txt: "[ASSELINEAU] 'Aimer sa femme c'est bien, la payer avec nos impôts non.'", eff: { artisans: 4 } },
+                { cond: 'fillon', txt: "[FILLON] 'Elle ne faisait pas des confitures !'", eff: { retraites: 5, cadres: -3 } },
+                { cond: 'dupont', txt: "[DUPONT-AIGNAN] 'Défense pathétique.'", eff: { artisans: 4 } }
+            ]
+        },
+        {
+            date: "29 Jan 2017", title: "Hamon Vainqueur", desc: "Le PS choisit la ligne gauche.",
+            choices: [
+                { txt: "Légitimité : 'Le PS doit s'unir.'", eff: { intermediaires: 3 } },
+                { txt: "Marginalisation : 'Boulevard pour le centre.'", eff: { cadres: 3 } },
+                { txt: "Fin du parti : 'Chant du cygne.'", eff: { ouvriers: 2 } },
+                { cond: 'hamon', txt: "[HAMON] 'Le revenu universel, idée dont l'heure est venue.'", eff: { inactifs: 8, intermediaires: 6 } },
+                { cond: 'melenchon', txt: "[MÉLENCHON] 'Benoît, quitte ce cadavre (PS) !'", eff: { inactifs: 6, ouvriers: 4 } },
+                { cond: 'poutou', txt: "[POUTOU] 'La fête chez les socio-traîtres.'", eff: { ouvriers: 5 } }
+            ]
+        },
+        {
+            date: "29 Jan 2017", title: "Meeting Villette", desc: "Fillon tente de relancer la machine.",
+            choices: [
+                { txt: "Force : 'Le peuple de droite est là.'", eff: { retraites: 4 } },
+                { txt: "Aveuglement : 'Déni total.'", eff: { cadres: -2 } },
+                { txt: "Contre-attaque : 'Assez du tribunal médiatique.'", eff: { artisans: 3 } },
+                { cond: 'fillon', txt: "[FILLON] 'Je suis comme le chêne, je ne plie pas !'", eff: { retraites: 8, agriculteurs: 6 } },
+                { cond: 'asselineau', txt: "[ASSELINEAU] 'On s'en fiche, la France a besoin de moi.'", eff: { artisans: 3 } },
+                { cond: 'lepen', txt: "[LE PEN] 'Il harangue les bourgeois, la France souffre.'", eff: { ouvriers: 6, employes: 6 } }
+            ]
+        },
+        {
+            date: "30 Jan 2017", title: "Audition Police", desc: "Le couple Fillon interrogé.",
+            choices: [
+                { txt: "Humiliation : 'Image désastreuse.'", eff: { cadres: -3 } },
+                { txt: "Coopération : 'Prouver sa bonne foi.'", eff: { retraites: 2 } },
+                { txt: "Inquiétude : 'Campagne polluée.'", eff: { intermediaires: 2 } },
+                { cond: 'arthaud', txt: "[ARTHAUD] 'Un ouvrier qui vole un steak fait de la prison, lui...'", eff: { ouvriers: 8 } },
+                { cond: 'dupont', txt: "[DUPONT-AIGNAN] 'Épreuve terrible humainement.'", eff: { retraites: 3 } },
+                { cond: 'macron', txt: "[MACRON] 'Je continue ma route.'", eff: { cadres: 4 } }
+            ]
+        },
+        {
+            date: "31 Jan 2017", title: "Les Enfants Fillon", desc: "Eux aussi rémunérés ?",
+            choices: [
+                { txt: "Accumulation : 'Système clanique.'", eff: { intermediaires: 3 } },
+                { txt: "Défense : 'Ils étaient avocats.'", eff: { cadres: 2 } },
+                { txt: "Ecœurement : 'Il doit se retirer.'", eff: { ouvriers: 4 } },
+                { cond: 'fillon', txt: "[FILLON] 'Avez-vous une limite dans l'ignominie ?'", eff: { retraites: 5, cadres: -5 } },
+                { cond: 'hamon', txt: "[HAMON] 'Moi je veux aider les jeunes qui galèrent.'", eff: { inactifs: 6, intermediaires: 4 } },
+                { cond: 'cheminade', txt: "[CHEMINADE] 'Quel connard...'", eff: { ouvriers: 2 } }
+            ]
+        },
+        {
+            date: "1 Fév 2017", title: "Tenir 15 jours", desc: "Fillon demande un sursis à son camp.",
+            choices: [
+                { txt: "Délai : 'Il joue la montre.'", eff: { cadres: -2 } },
+                { txt: "Confiance : 'La justice le blanchira.'", eff: { retraites: 3 } },
+                { txt: "Agonie : 'Démission inéluctable.'", eff: { intermediaires: 2 } },
+                { cond: 'dupont', txt: "[DUPONT-AIGNAN] 'C'est le Titanic ! Changeons de capitaine.'", eff: { artisans: 6 } },
+                { cond: 'fillon', txt: "[FILLON] 'Droit dans les yeux : Tenez bon.'", eff: { retraites: 6, agriculteurs: 4 } },
+                { cond: 'melenchon', txt: "[MÉLENCHON] 'La République n'est pas une salle d'attente.'", eff: { inactifs: 6 } }
+            ]
+        },
+        {
+            date: "4 Fév 2017", title: "Ni droite ni gauche", desc: "Meeting de Macron à Lyon.",
+            choices: [
+                { txt: "Flou : 'Ça veut dire vide.'", eff: { ouvriers: 2 } },
+                { txt: "Synthèse : 'Le meilleur des deux côtés.'", eff: { cadres: 3 } },
+                { txt: "Marketing : 'Produit bien emballé.'", eff: { artisans: 2 } },
+                { cond: 'macron', txt: "[MACRON] 'PARCE QUE C'EST NOTRE PROJET !!!'", eff: { cadres: 8, intermediaires: 6, inactifs: 4 } },
+                { cond: 'lepen', txt: "[LE PEN] 'Le pire de la droite et de la gauche réunis.'", eff: { ouvriers: 6 } },
+                { cond: 'hamon', txt: "[HAMON] 'Ni droite ni gauche = Droite.'", eff: { inactifs: 5 } }
+            ]
+        },
+        {
+            date: "5 Fév 2017", title: "144 Engagements", desc: "Meeting de Le Pen à Lyon.",
+            choices: [
+                { txt: "Danger : 'Liste de courses xénophobe.'", eff: { cadres: 2, intermediaires: 2 } },
+                { txt: "Protection : 'Les Français d'abord.'", eff: { ouvriers: 4, artisans: 3 } },
+                { txt: "Isolement : 'Sortir de l'Euro = Suicide.'", eff: { cadres: 3, retraites: 2 } },
+                { cond: 'lepen', txt: "[LE PEN] 'Au nom du peuple ! On est chez nous !'", eff: { ouvriers: 10, employes: 8, artisans: 6 } },
+                { cond: 'macron', txt: "[MACRON] 'Le repli est une chimère.'", eff: { cadres: 6, intermediaires: 4 } },
+                { cond: 'fillon', txt: "[FILLON] 'Programme d'extrême gauche des années 80.'", eff: { retraites: 5, cadres: 3 } }
+            ]
+        },
+        {
+            date: "5 Fév 2017", title: "L'Hologramme", desc: "Mélenchon en meeting double (Lyon/Paris).",
+            choices: [
+                { txt: "Innovation : 'Modernité.'", eff: { inactifs: 4 } },
+                { txt: "Ubiquité : 'Culte de la personnalité.'", eff: { cadres: 2 } },
+                { txt: "Fond : 'Ferveur populaire.'", eff: { ouvriers: 3 } },
+                { cond: 'melenchon', txt: "[MÉLENCHON] 'L'esprit de l'insoumission n'a pas de frontière !'", eff: { inactifs: 8, ouvriers: 6 } },
+                { cond: 'hamon', txt: "[HAMON] 'L'unité c'est mieux qu'un trucage vidéo.'", eff: { intermediaires: 4 } },
+                { cond: 'poutou', txt: "[POUTOU] 'Ses voix suffiront-elles ?'", eff: { ouvriers: 2 } }
+            ]
+        },
+        {
+            date: "6 Fév 2017", title: "Excuses de Fillon", desc: "Conférence de presse : il reste.",
+            choices: [
+                { txt: "Repentir : 'Excuses morales.'", eff: { retraites: 3 } },
+                { txt: "Obstination : 'Suicide pour son camp.'", eff: { cadres: -2 } },
+                { txt: "Nouveau départ : 'Abcès percé.'", eff: { artisans: 2 } },
+                { cond: 'fillon', txt: "[FILLON] 'C'était une erreur, pardon. Mais je reste.'", eff: { retraites: 6, agriculteurs: 4 } },
+                { cond: 'dupont', txt: "[DUPONT-AIGNAN] 'Non, c'est non. Je suis le candidat légitime.'", eff: { artisans: 6 } },
+                { cond: 'melenchon', txt: "[MÉLENCHON] 'Rendez l'argent, pas des excuses !'", eff: { ouvriers: 6, inactifs: 6 } }
+            ]
+        },
+        {
+            date: "14 Fév 2017", title: "Alger", desc: "Macron : Colonisation = Crime contre l'humanité.",
+            choices: [
+                { txt: "Indignation : 'Insulte aux Pieds-Noirs.'", eff: { retraites: 4, agriculteurs: 3 } },
+                { txt: "Vérité : 'Nommer les choses.'", eff: { inactifs: 4, intermediaires: 2 } },
+                { txt: "Maladresse : 'Diviser pour séduire.'", eff: { cadres: -2 } },
+                { cond: 'lepen', txt: "[LE PEN] 'Il crache sur la France ! Trahison !'", eff: { retraites: 8, agriculteurs: 6, ouvriers: 4 } },
+                { cond: 'fillon', txt: "[FILLON] 'Repentance insupportable.'", eff: { retraites: 7, cadres: 3 } },
+                { cond: 'macron', txt: "[MACRON] 'Un passé qui ne passe pas. Je l'assume.'", eff: { inactifs: 8, intermediaires: 4, retraites: -6 } }
+            ]
+        },
+        {
+            date: "15 Fév 2017", title: "Ralliement de Rugy", desc: "L'écolo de la primaire rejoint Macron.",
+            choices: [
+                { txt: "Parjure : 'Sa parole ne vaut rien.'", eff: { inactifs: 2 } },
+                { txt: "Recomposition : 'Hamon est trop à gauche.'", eff: { cadres: 2 } },
+                { txt: "Attraction : 'Macron aimante tout.'", eff: { intermediaires: 3 } },
+                { cond: 'hamon', txt: "[HAMON] 'Il préfère les places aux convictions.'", eff: { inactifs: 5, intermediaires: 4 } },
+                { cond: 'melenchon', txt: "[MÉLENCHON] 'Girouette qui indique le sens du capital.'", eff: { ouvriers: 5, inactifs: 5 } },
+                { cond: 'arthaud', txt: "[ARTHAUD] 'Tous la même gabegie.'", eff: { ouvriers: 4 } }
+            ]
+        },
+        {
+            date: "16 Fév 2017", title: "Sondage Choc", desc: "Le Pen largement en tête au 1er tour.",
+            choices: [
+                { txt: "Réveil : 'L'heure est grave.'", eff: { cadres: 3, retraites: 2 } },
+                { txt: "Banalisation : 'Effondrement des partis.'", eff: { intermediaires: 2 } },
+                { txt: "Victoire : 'Le peuple se réveille.'", eff: { ouvriers: 4 } },
+                { cond: 'lepen', txt: "[LE PEN] 'Les Français veulent reprendre leur destin.'", eff: { ouvriers: 8, employes: 6 } },
+                { cond: 'melenchon', txt: "[MÉLENCHON] 'La vraie colère c'est nous, pas la haine !'", eff: { inactifs: 6, ouvriers: 4 } },
+                { cond: 'fillon', txt: "[FILLON] 'Seul je peux la battre.'", eff: { retraites: 6, cadres: 4 } }
+            ]
+        },
+        {
+            date: "Mi-Fév 2017", title: "L'Hésitation Bayrou", desc: "Le centre va-t-il rallier Macron ?",
+            choices: [
+                { txt: "Pivot : 'Faiseur de rois.'", eff: { cadres: 2, intermediaires: 2 } },
+                { txt: "Ironie : 'Négociation de postes.'", eff: { artisans: 2 } },
+                { txt: "Responsabilité : 'Pas de division.'", eff: { retraites: 2 } },
+                { cond: 'macron', txt: "[MACRON] 'Un tournant décisif.'", eff: { cadres: 6, intermediaires: 4, retraites: 4 } },
+                { cond: 'fillon', txt: "[FILLON] 'La girouette qui grince. Reconstitution de l'équipe Hollande.'", eff: { retraites: 5, agriculteurs: 4 } },
+                { cond: 'asselineau', txt: "[ASSELINEAU] 'Macron panique à cause du vote Asselineau !'", eff: { artisans: 4 } }
             ]
         }
     ];
 
-    // --- MEETINGS ---
+    // --- MEETING PLACES ---
     const MEETING_PLACES = [
         { name: "Paris (Bercy)", type: "Grand-Messe", eff: { cadres: 4, intermediaires: 3, ouvriers: -2 } },
         { name: "Hénin-Beaumont", type: "Populaire", eff: { ouvriers: 5, employes: 3, cadres: -4 } },
@@ -339,13 +578,9 @@
             if(POPULATION[k]) POPULATION[k].score = c.stats[k];
         }
 
-        // Init Events: On mélange les events pour avoir un ordre différent à chaque fois (sauf Penelope qui arrive souvent tôt)
-        let shuffled = [...EVENTS].sort(() => 0.5 - Math.random());
-        // On s'assure d'avoir assez d'events pour remplir les tours non-meeting
-        // (Turn 1..20. Meetings turns: 4, 8, 12, 16. Donc 4 meetings, 16 events. Il nous faut 16 events.)
-        // Si pas assez, on boucle ou on duplique. Ici on a 10 events uniques dans la liste ci-dessus, 
-        // pour la démo on va les répéter si besoin ou arrêter le jeu plus tôt si liste vide.
-        gameState.eventQueue = shuffled;
+        // Init Events: On utilise la liste fixe SCENARIO_EVENTS
+        // On copie le tableau pour ne pas modifier l'original
+        gameState.eventQueue = [...SCENARIO_EVENTS]; 
 
         // UI
         document.getElementById('selection-screen').classList.remove('active');
@@ -357,28 +592,30 @@
     }
 
     function playTurn() {
-        // --- SECURITE FIN DE JEU (Anti-boucle infinie) ---
-        if (gameState.turn > MAX_TURNS || gameState.eventQueue.length === 0) {
+        // --- SECURITE FIN DE JEU ---
+        // Si plus d'events ou max tours atteint
+        if (gameState.eventQueue.length === 0 || gameState.turn > 30) {
             endGame();
-            return; // STOP EXECUTION
+            return; 
         }
 
-        // --- MEETING TOUS LES 4 TOURS ---
-        if (gameState.turn % 4 === 0) {
+        // --- MEETING TOUS LES 3 TOURS (3, 6, 9...) ---
+        if (gameState.turn % 3 === 0) {
             showMeeting();
         } else {
             // Event normal
             let evt = gameState.eventQueue.shift(); // Prend le prochain
-            if(!evt) { endGame(); return; } // Plus d'event ? Fin.
+            if(!evt) { endGame(); return; } 
             showEvent(evt);
         }
     }
 
     function showEvent(evt) {
-        document.getElementById('turn-badge').innerText = `SEMAINE ${gameState.turn} / ${MAX_TURNS}`;
-        document.getElementById('event-type').innerText = "ACTUALITÉ";
-        document.getElementById('event-type').style.background = "var(--gold)";
-        document.getElementById('event-date').innerText = "Campagne officielle";
+        document.getElementById('date-display').innerText = evt.date;
+        document.getElementById('turn-count').innerText = gameState.turn;
+        
+        document.getElementById('event-badge').innerText = "ACTUALITÉ";
+        document.getElementById('event-badge').style.background = "var(--gold)";
         
         document.getElementById('event-title').innerText = evt.title;
         document.getElementById('event-desc').innerText = evt.desc;
@@ -392,7 +629,11 @@
 
             let btn = document.createElement('div');
             btn.className = 'choice-btn';
-            btn.innerText = "➤ " + ch.txt;
+            
+            // Si c'est un choix spécifique, on ajoute un petit label visuel
+            let label = ch.cond ? `<span class="spec-tag">RÉPONSE SPÉCIFIQUE</span>` : "";
+            
+            btn.innerHTML = `${label}➤ ${ch.txt}`;
             btn.onclick = () => {
                 applyEffect(ch.eff);
                 nextTurn();
@@ -402,13 +643,12 @@
     }
 
     function showMeeting() {
-        document.getElementById('turn-badge').innerText = `SEMAINE ${gameState.turn} / ${MAX_TURNS}`;
-        document.getElementById('event-type').innerText = "ORGANISATION";
-        document.getElementById('event-type').style.background = "#fff";
-        document.getElementById('event-date').innerText = "Stratégie Territoriale";
+        document.getElementById('turn-count').innerText = gameState.turn;
+        document.getElementById('event-badge').innerText = "ORGANISATION";
+        document.getElementById('event-badge').style.background = "#fff";
 
         document.getElementById('event-title').innerText = "Grand Meeting";
-        document.getElementById('event-desc').innerText = "C'est l'heure de rassembler vos militants. Choisissez une ville stratégique pour votre meeting cette semaine.";
+        document.getElementById('event-desc').innerText = "C'est l'heure de rassembler vos militants. Choisissez une ville stratégique.";
 
         const c = document.getElementById('choices-container');
         c.innerHTML = '';
@@ -419,7 +659,7 @@
         places.forEach(p => {
             let btn = document.createElement('div');
             btn.className = 'choice-btn';
-            btn.innerHTML = `<span class="bold">${p.name}</span> <span class="choice-italic">Cible: ${p.type}</span>`;
+            btn.innerHTML = `<span class="bold">${p.name}</span> <span style="font-style:italic; opacity:0.7; font-size:0.9em;">(Cible: ${p.type})</span>`;
             btn.onclick = () => {
                 applyEffect(p.eff);
                 nextTurn();
@@ -431,10 +671,10 @@
     function applyEffect(eff) {
         for (let k in eff) {
             if(POPULATION[k]) {
-                // Application du NERF (Impact Reducer)
-                let val = eff[k] * IMPACT_REDUCER;
+                // Application du NERF (Impact Factor)
+                let val = eff[k] * IMPACT_FACTOR;
                 POPULATION[k].score += val;
-                // Caps strictes
+                // Caps strictes 0-100
                 if(POPULATION[k].score < 0) POPULATION[k].score = 0;
                 if(POPULATION[k].score > 100) POPULATION[k].score = 100;
             }
@@ -444,7 +684,7 @@
     function nextTurn() {
         gameState.turn++;
         updateUI();
-        playTurn(); // Loop
+        playTurn(); 
     }
 
     function getGlobalScore() {
@@ -467,7 +707,7 @@
             let p = POPULATION[k];
             let row = document.createElement('div');
             row.className = 'stat-line';
-            let color = p.score > 50 ? 'var(--gold)' : (p.score < 15 ? '#c0392b' : '#ccc');
+            let color = p.score > 50 ? 'var(--gold)' : (p.score < 15 ? '#c0392b' : '#ddd');
             
             row.innerHTML = `
                 <div style="display:flex; justify-content:space-between;">
@@ -494,7 +734,7 @@
     function endGame() {
         // Force Hide Game / Show Results
         document.getElementById('game-screen').classList.remove('active');
-        document.getElementById('game-screen').style.display = 'none'; // Double sécurité
+        document.getElementById('game-screen').style.display = 'none'; 
         
         document.getElementById('results-screen').classList.add('active');
         document.getElementById('results-screen').style.display = 'flex';
@@ -507,28 +747,20 @@
         
         if (sc >= 50) {
             st = "PRÉSIDENT DE LA RÉPUBLIQUE";
-            txt = "Un triomphe absolu dès le premier tour. Du jamais vu.";
+            txt = "Un triomphe absolu dès le premier tour. L'Histoire est en marche.";
         } else if (sc >= 18) {
             st = "QUALIFIÉ SECOND TOUR";
-            txt = "La bataille continue. Vous êtes en finale.";
+            txt = "La bataille continue. Vous êtes en finale. Tout est possible.";
         } else if (sc >= 5) {
-            st = "DÉFAITE";
-            txt = "Vous ne serez pas président, mais l'honneur est sauf.";
+            st = "DÉFAITE HONORABLE";
+            txt = "Vous ne serez pas président, mais vos frais de campagne sont remboursés.";
         } else {
-            st = "NAUFRAGE";
-            txt = "Score humiliant. Votre parti va disparaître.";
+            st = "NAUFRAGE POLITIQUE";
+            txt = "Score humiliant. Votre parti va probablement disparaître.";
         }
 
         document.getElementById('final-status').innerText = st;
         document.getElementById('final-desc').innerText = txt;
-
-        // Grid details
-        const g = document.getElementById('final-grid');
-        g.innerHTML = '';
-        Object.keys(POPULATION).forEach(k => {
-            let p = POPULATION[k];
-            g.innerHTML += `<div><strong>${p.label}:</strong> ${Math.round(p.score)}%</div>`;
-        });
     }
 
     // Start
