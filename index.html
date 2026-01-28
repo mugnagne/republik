@@ -247,10 +247,11 @@
     </div>
 
 <script>
-    // --- CONFIGURATION DU JEU ---
+    // --- CONFIGURATION ---
     const MAX_TURNS = 15; 
     
-    // --- DONNEES ---
+    // --- DONNEES POPULATION ---
+    // (J'ai ajouté des protections pour que les scores ne dépassent jamais 0-100 visuellement)
     const POPULATION = {
         agriculteurs: { label: "Agriculteurs", weight: 1.5, score: 50 },
         artisans: { label: "Artisans/Chefs", weight: 6.7, score: 50 },
@@ -330,7 +331,7 @@
         }
     ];
 
-    // --- EVENEMENTS GENERAUX (POOL) ---
+    // --- EVENEMENTS GENERAUX ---
     const GENERAL_EVENTS = [
         {
             title: "Crise en Guyane",
@@ -406,7 +407,7 @@
         }
     ];
 
-    // --- MEETINGS (Effets cachés) ---
+    // --- MEETING LOCATIONS ---
     const MEETING_LOCATIONS = [
         { name: "La Fête de l'Huma", type: "Populaire", effects: { ouvriers: 6, inactifs: 4, cadres: -5, artisans: -3 } },
         { name: "Université d'été du MEDEF", type: "Patronal", effects: { artisans: 6, cadres: 5, ouvriers: -8, employes: -5 } },
@@ -425,19 +426,21 @@
         { name: "Cathédrale de Chartres", type: "Tradition", effects: { retraites: 6, agriculteurs: 4, inactifs: -4 } }
     ];
 
-    // --- LOGIQUE DE JEU ---
+    // --- GAME STATE ---
     let gameState = {
         candidate: null,
         turn: 1,
-        phase: 'event', // 'event', 'meeting', 'debate'
         history: []
     };
 
+    // --- LOGIC ---
+
     function initSelection() {
         const container = document.getElementById('candidates-container');
+        container.innerHTML = '';
         CANDIDATES.forEach(c => {
             let div = document.createElement('div');
-            div.className = 'candidate-card';
+            div.className = 'candidate-card glass-panel';
             div.innerHTML = `<h3 class="gold-text">${c.name}</h3><div style="font-size:0.8em; opacity:0.7;">${c.party}</div>`;
             div.onclick = () => startGame(c);
             container.appendChild(div);
@@ -446,11 +449,15 @@
 
     function startGame(candidate) {
         gameState.candidate = candidate;
+        gameState.turn = 1;
+        gameState.history = [];
+
         // Apply base stats
         for (let key in candidate.baseStats) {
-            POPULATION[key].score = candidate.baseStats[key];
+            if(POPULATION[key]) POPULATION[key].score = candidate.baseStats[key];
         }
         document.getElementById('selection-screen').classList.remove('active');
+        document.getElementById('results-screen').classList.remove('active');
         document.getElementById('game-screen').classList.add('active');
         document.getElementById('candidate-display').innerText = candidate.name;
         
@@ -459,31 +466,27 @@
     }
 
     function nextPhase() {
-        // END GAME
+        // --- FIX CRITIQUE : VÉRIFICATION DE FIN DE JEU AU DÉBUT ---
         if (gameState.turn > MAX_TURNS) {
             endGame();
-            return;
+            return; 
         }
 
-        // TURN MANAGEMENT
-        document.getElementById('turn-display').innerText = `SEMAINE ${gameState.turn} / ${MAX_TURNS}`;
-        const container = document.getElementById('choices-container');
-        container.innerHTML = '';
         const title = document.getElementById('event-title');
         const desc = document.getElementById('event-desc');
         const tag = document.getElementById('event-tag');
+        const container = document.getElementById('choices-container');
+        container.innerHTML = ''; // Clear previous buttons
 
         // 1. DEBATS (Tours 5, 10, 15)
         if (gameState.turn === 5 || gameState.turn === 10 || gameState.turn === 15) {
-            gameState.phase = 'debate';
             tag.innerText = gameState.turn === 15 ? "DÉBAT FINAL" : "DÉBAT TÉLÉVISÉ";
             tag.style.background = "#c0392b";
             title.innerText = gameState.turn === 15 ? "Le Face-à-Face" : "Le Grand Débat";
             desc.innerText = "Vous êtes en direct devant des millions de Français. C'est le moment de cibler un adversaire pour l'affaiblir ou récupérer son électorat.";
             
-            // Generate Rival Buttons
+            // Randomly pick 3 rivals
             let rivals = CANDIDATES.filter(c => c.id !== gameState.candidate.id);
-            // Randomly pick 3 rivals to attack + 1 generic defense
             let choices = rivals.sort(() => 0.5 - Math.random()).slice(0, 3);
             
             choices.forEach(rival => {
@@ -495,7 +498,7 @@
                 }
                 container.appendChild(btn);
             });
-             // Defense option
+             
              let defBtn = document.createElement('button');
              defBtn.innerHTML = `<strong>Ne pas attaquer</strong> (Défendre son bilan)`;
              defBtn.onclick = () => {
@@ -506,14 +509,13 @@
              return;
         }
 
-        // 2. MEETING (Tous les tours pairs, sauf si debat)
+        // 2. MEETING (Tous les tours pairs, sauf si débat)
         if (gameState.turn % 2 === 0) {
-            gameState.phase = 'meeting';
             tag.innerText = "ORGANISATION";
             tag.style.background = "#fff"; 
             tag.style.color = "#000";
             title.innerText = "Grand Meeting";
-            desc.innerText = "Où souhaitez-vous organiser votre rassemblement cette semaine ? (Les effets sont cachés, fiez-vous à votre intuition politique).";
+            desc.innerText = "Où souhaitez-vous organiser votre rassemblement cette semaine ?";
 
             let locations = [...MEETING_LOCATIONS].sort(() => 0.5 - Math.random()).slice(0, 4);
             locations.forEach(loc => {
@@ -529,21 +531,18 @@
         }
 
         // 3. EVENT CLASSIC (Tous les tours impairs)
-        gameState.phase = 'event';
         tag.innerText = "ACTUALITÉ";
         tag.style.background = "var(--gold)";
         tag.style.color = "#000";
         
-        // Check for specific event first
         let specific = SPECIFIC_EVENTS.find(e => e.candidateId === gameState.candidate.id && !gameState.history.includes(e.title));
         let evt;
         
-        if (specific && Math.random() > 0.5) {
+        if (specific && Math.random() > 0.6) {
             evt = specific;
         } else {
-            // Random general event not yet played
             let pool = GENERAL_EVENTS.filter(e => !gameState.history.includes(e.title));
-            if(pool.length === 0) pool = GENERAL_EVENTS; // reset pool if empty (rare)
+            if(pool.length === 0) pool = GENERAL_EVENTS; 
             evt = pool[Math.floor(Math.random() * pool.length)];
         }
         
@@ -563,38 +562,38 @@
     }
 
     function resolveDebate(target) {
-        // Logic: Attacking someone steals their voters OR antagonizes them depending on your alignment
-        // Simplified Logic for the game:
-        // Attacking Right (Fillon/LePen) pleases Left/Center
-        // Attacking Left (Melenchon/Hamon) pleases Right
-        
         let effects = {};
-        
-        if (['fillon', 'lepen', 'dupont'].includes(target.id)) {
-            // Attacking Right
+        // Logic simplified to avoid crash if IDs don't match exactly
+        if (['fillon', 'lepen', 'dupont', 'asselineau', 'lassalle', 'cheminade'].includes(target.id)) {
+            // Attacking Right/Souverainistes
             effects = { inactifs: 4, intermediaires: 3, cadres: 2, retraites: -5, agriculteurs: -4 };
         } else if (['melenchon', 'hamon', 'poutou', 'arthaud'].includes(target.id)) {
             // Attacking Left
             effects = { cadres: 4, retraites: 4, artisans: 3, inactifs: -5, ouvriers: -4 };
         } else {
-            // Attacking Center (Macron/Lassalle)
+            // Attacking Center (Macron)
             effects = { ouvriers: 3, retraites: -2, cadres: -4 };
         }
-        
-        // Bonus if target is far from player ideologically? (Too complex for this snippet, keep simple)
         applyEffects(effects);
     }
 
     function finishTurn() {
         gameState.turn++;
-        updateUI();
-        nextPhase();
+        
+        // --- FIX CRITIQUE : Si on dépasse le max, on force la fin sans updateUI ---
+        if (gameState.turn > MAX_TURNS) {
+            endGame();
+        } else {
+            updateUI();
+            nextPhase();
+        }
     }
 
     function applyEffects(effects) {
         for (let key in effects) {
             if (POPULATION[key]) {
                 POPULATION[key].score += effects[key];
+                // Safety caps
                 if(POPULATION[key].score > 100) POPULATION[key].score = 100;
                 if(POPULATION[key].score < 0) POPULATION[key].score = 0;
             }
@@ -612,11 +611,12 @@
     }
 
     function updateUI() {
-        // Stats Bars
+        // Turn display
+        document.getElementById('turn-display').innerText = `SEMAINE ${gameState.turn} / ${MAX_TURNS}`;
+        
+        // Stats
         const div = document.getElementById('population-stats');
         div.innerHTML = '';
-        
-        // Sort by score
         let sorted = Object.keys(POPULATION).sort((a,b) => POPULATION[b].score - POPULATION[a].score);
         
         sorted.forEach(k => {
@@ -645,46 +645,50 @@
     }
 
     function endGame() {
-        document.getElementById('game-screen').classList.remove('active');
-        document.getElementById('results-screen').classList.add('active');
+        // 1. Force screen switch using direct style if classes fail
+        const gameScreen = document.getElementById('game-screen');
+        const resScreen = document.getElementById('results-screen');
         
-        let score = calculateTotal();
+        gameScreen.classList.remove('active');
+        gameScreen.style.display = 'none'; // Force hide
+        
+        resScreen.classList.add('active');
+        resScreen.style.display = 'flex'; // Force show
+
+        // 2. Calculate score safely
+        let score = 0;
+        try {
+            score = calculateTotal();
+        } catch(e) { score = 0; }
+        
         document.getElementById('final-score-display').innerText = score.toFixed(2) + "%";
         
+        // 3. Set Banner
         let banner = document.getElementById('win-lose-banner');
         let text = document.getElementById('final-analysis');
-        
-        // Logic for win/loss
-        let isWin = false;
         let analysis = "";
 
         if (score >= 50) {
-            isWin = true;
-            banner.innerHTML = "<div class='win-banner'>VICTOIRE AU PREMIER TOUR</div>";
+            banner.innerHTML = "<div class='win-banner' style='color:#2ecc71; border:1px solid #2ecc71; padding:10px;'>VICTOIRE AU PREMIER TOUR</div>";
             analysis = "C'est un raz-de-marée historique. La Vème République n'a jamais vu un tel triomphe.";
         } else if (score >= 20) {
-            isWin = true;
-            banner.innerHTML = "<div class='win-banner'>QUALIFIÉ AU SECOND TOUR</div>";
-            analysis = "Vous êtes au second tour ! Tout va se jouer dans les deux prochaines semaines, mais la dynamique est là.";
-        } else if (score >= 10) {
-            banner.innerHTML = "<div class='lose-banner'>DÉFAITE HONORABLE</div>";
-            analysis = "Vous pesez dans le paysage politique, mais les portes de l'Élysée restent fermées.";
+            banner.innerHTML = "<div class='win-banner' style='color:#2ecc71; border:1px solid #2ecc71; padding:10px;'>QUALIFIÉ AU SECOND TOUR</div>";
+            analysis = "Vous êtes au second tour ! Tout va se jouer dans les deux prochaines semaines.";
         } else if (score >= 5) {
-            banner.innerHTML = "<div class='lose-banner'>REMBOURSEMENT DES FRAIS</div>";
-            analysis = "L'honneur est sauf, vos frais de campagne sont remboursés. C'est déjà ça.";
+            banner.innerHTML = "<div class='lose-banner' style='color:#e74c3c; border:1px solid #e74c3c; padding:10px;'>DÉFAITE</div>";
+            analysis = "Vous ne passez pas le premier tour, mais l'honneur est sauf (frais remboursés).";
         } else {
-            banner.innerHTML = "<div class='lose-banner'>HUMILIATION TOTALE</div>";
-            analysis = "Votre parti va probablement disparaître après ce score catastrophique.";
+            banner.innerHTML = "<div class='lose-banner' style='color:#e74c3c; border:1px solid #e74c3c; padding:10px;'>CATASTROPHE</div>";
+            analysis = "Score humiliant. Votre parti va probablement disparaître.";
         }
-        
         text.innerText = analysis;
 
-        // Breakdown
+        // 4. Breakdown
         let grid = document.getElementById('final-breakdown');
         grid.innerHTML = '';
         Object.keys(POPULATION).forEach(k => {
             let p = POPULATION[k];
-            grid.innerHTML += `<div><strong>${p.label}:</strong> <span class="gold-text">${Math.round(p.score)}%</span></div>`;
+            grid.innerHTML += `<div style="margin-bottom:5px;"><strong>${p.label}:</strong> <span class="gold-text">${Math.round(p.score)}%</span></div>`;
         });
     }
 
