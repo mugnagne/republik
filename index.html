@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RÉPUBLIQUE - La Campagne de 2017</title>
+    <title>RÉPUBLIQUE - 2017 Ultimate</title>
     <style>
         :root {
             --navy-deep: #051024; /* Bleu Nuit Présidentiel */
@@ -93,10 +93,6 @@
             background: rgba(212, 175, 55, 0.1); border-color: var(--gold); 
             color: #fff; transform: translateX(5px); 
         }
-        .spec-tag {
-            font-size: 0.7em; text-transform: uppercase; letter-spacing: 1px;
-            color: var(--gold); display: block; margin-bottom: 5px; opacity: 0.8;
-        }
 
         /* END SCREEN */
         #results-screen { align-items: center; justify-content: center; text-align: center; }
@@ -173,8 +169,7 @@
 
 <script>
     // --- CONFIGURATION ---
-    // Le jeu suit strictement les 30 events + meetings insérés
-    const IMPACT_FACTOR = 0.20; // Facteur d'équilibrage global (pour ne pas faire +20% en un tour)
+    const IMPACT_FACTOR = 0.20; 
     
     // --- DONNEES POPULATION ---
     const POPULATION = {
@@ -188,8 +183,7 @@
         inactifs: { label: "Jeunes/Inactifs", weight: 16.0, score: 0 }
     };
 
-    // --- CANDIDATS (Stats Janvier 2017) ---
-    // Total ~100%
+    // --- CANDIDATS ---
     const CANDIDATES = [
         { id: 'macron', name: "E. MACRON", party: "En Marche!", stats: { agriculteurs: 15, artisans: 15, cadres: 32, intermediaires: 26, employes: 18, ouvriers: 12, retraites: 22, inactifs: 22 } },
         { id: 'fillon', name: "F. FILLON", party: "Les Républicains", stats: { agriculteurs: 45, artisans: 35, cadres: 30, intermediaires: 18, employes: 10, ouvriers: 5, retraites: 42, inactifs: 8 } },
@@ -204,335 +198,632 @@
         { id: 'cheminade', name: "J. CHEMINADE", party: "S&P", stats: { agriculteurs: 0, artisans: 0, cadres: 0, intermediaires: 0, employes: 0, ouvriers: 0, retraites: 0, inactifs: 0 } }
     ];
 
-    // --- EVENTS HISTORIQUES (ORDRE CHRONOLOGIQUE) ---
-    // Les réponses spécifiques ont des valeurs doublées (~8 vs ~4)
+    // --- EVENTS HISTORIQUES (Cleaned Up) ---
     const SCENARIO_EVENTS = [
         {
             date: "6 Avril 2016", title: "Lancement d'En Marche !", desc: "Emmanuel Macron lance son mouvement à Amiens.",
             choices: [
-                { txt: "Stratégie du dédain : 'Aventure individuelle vouée à l'échec.'", eff: { cadres: -2, retraites: 2 } },
-                { txt: "Stratégie de la trahison : 'On ne peut pas servir l'État et sa boutique.'", eff: { retraites: 3, intermediaires: -2 } },
-                { txt: "Stratégie de la nouveauté : 'Les vieux partis sont morts.'", eff: { cadres: 3, inactifs: 3, retraites: -3 } },
-                { cond: 'macron', txt: "[MACRON] 'Je veux libérer l'énergie de ce pays !'", eff: { cadres: 6, inactifs: 6, ouvriers: -2 } }, /* Specifique */
-                { cond: 'lepen', txt: "[LE PEN] 'En marche vers la banque !'", eff: { ouvriers: 8, employes: 6, cadres: -6 } },
-                { cond: 'fillon', txt: "[FILLON] 'Il faut de l'expérience, pas de l'enthousiasme juvénile.'", eff: { retraites: 8, cadres: -2 } }
+                { txt: "'C'est une aventure individuelle vouée à l'échec.'", eff: { cadres: -2, retraites: 2 } },
+                { txt: "'On ne peut pas servir l'État et sa boutique en même temps.'", eff: { retraites: 3, intermediaires: -2 } },
+                { txt: "'C'est la preuve que les vieux partis sont morts.'", eff: { cadres: 3, inactifs: 3, retraites: -3 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Je veux libérer l'énergie de ce pays !'", eff: { cadres: 6, inactifs: 6, ouvriers: -2 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'En marche vers la banque !'", eff: { ouvriers: 8, employes: 6, cadres: -6 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Il faut de l'expérience, pas de l'enthousiasme juvénile.'", eff: { retraites: 8, cadres: -2 } }
             ]
         },
         {
             date: "30 Août 2016", title: "Démission de Bercy", desc: "Macron quitte le gouvernement pour se lancer.",
             choices: [
-                { txt: "Clarification : 'Il va devoir défendre son bilan.'", eff: { retraites: 2, cadres: -1 } },
-                { txt: "Chaos : 'C'est une désertion irresponsable.'", eff: { retraites: 3, agriculteurs: 2 } },
-                { txt: "Liberté : 'Il va à la rencontre des Français.'", eff: { cadres: 3, intermediaires: 2 } },
-                { cond: 'fillon', txt: "[FILLON] 'On ne part pas comme un voleur.'", eff: { retraites: 6, agriculteurs: 4 } },
-                { cond: 'melenchon', txt: "[MÉLENCHON] 'Bon débarras le petit banquier !'", eff: { ouvriers: 6, inactifs: 6 } },
-                { cond: 'macron', txt: "[MACRON] 'Je veux être libre de proposer un nouveau chemin.'", eff: { cadres: 6, intermediaires: 4 } }
+                { txt: "'Enfin ! Il va devoir défendre son bilan.'", eff: { retraites: 2, cadres: -1 } },
+                { txt: "'C'est une désertion irresponsable.'", eff: { retraites: 3, agriculteurs: 2 } },
+                { txt: "'Il reprend sa liberté pour aller vers les Français.'", eff: { cadres: 3, intermediaires: 2 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'On ne part pas comme un voleur.'", eff: { retraites: 6, agriculteurs: 4 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Bon débarras le petit banquier !'", eff: { ouvriers: 6, inactifs: 6 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Je veux être libre de proposer un nouveau chemin.'", eff: { cadres: 6, intermediaires: 4 } }
             ]
         },
         {
             date: "16 Nov 2016", title: "Candidature Officielle", desc: "Macron se déclare à Bobigny.",
             choices: [
-                { txt: "Bilan : 'Il est co-auteur du quinquennat Hollande.'", eff: { ouvriers: 2, employes: 2 } },
-                { txt: "Bulle : 'Une bulle médiatique qui va éclater.'", eff: { retraites: 3, agriculteurs: 2 } },
-                { txt: "Alternative : 'La 3ème voie nécessaire.'", eff: { cadres: 3, intermediaires: 3 } },
-                { cond: 'lepen', txt: "[LE PEN] 'Bobigny ? Quelle indécence pour ce mondialiste !'", eff: { ouvriers: 7, employes: 6 } },
-                { cond: 'fillon', txt: "[FILLON] 'La politique n'est pas un casting.'", eff: { retraites: 7, cadres: 2 } },
-                { cond: 'cheminade', txt: "[CHEMINADE] 'Je défends le Made In France, lui la City.'", eff: { ouvriers: 4 } }
+                { txt: "'Il est co-auteur du quinquennat Hollande.'", eff: { ouvriers: 2, employes: 2 } },
+                { txt: "'C'est une bulle médiatique qui va éclater.'", eff: { retraites: 3, agriculteurs: 2 } },
+                { txt: "'Il offre une 3ème voie nécessaire.'", eff: { cadres: 3, intermediaires: 3 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Bobigny ? Quelle indécence pour ce mondialiste !'", eff: { ouvriers: 7, employes: 6 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'La politique n'est pas un casting.'", eff: { retraites: 7, cadres: 2 } },
+                { cond: 'cheminade', txt: "<strong>Cheminade :</strong> 'Je défends le Made In France, lui la City.'", eff: { ouvriers: 4 } }
             ]
         },
         {
             date: "20 Nov 2016", title: "Sarkozy éliminé", desc: "Le 1er tour de la primaire de la droite sort l'ancien président.",
             choices: [
-                { txt: "Page tournée : 'Désir de renouvellement.'", eff: { cadres: 2, intermediaires: 2 } },
-                { txt: "Hommage : 'Je salue son parcours.'", eff: { retraites: 3, agriculteurs: 2 } },
-                { txt: "Dégagisme : 'Un de moins ! Au suivant.'", eff: { inactifs: 3, ouvriers: 3 } },
-                { cond: 'fillon', txt: "[FILLON] 'Je souhaite bonne chance à la France.' (Digne)", eff: { retraites: 8, cadres: 4 } },
-                { cond: 'melenchon', txt: "[MÉLENCHON] 'Champagne ! On n'a pas oublié le Kärcher !'", eff: { inactifs: 8, ouvriers: 6 } },
-                { cond: 'macron', txt: "[MACRON] 'La menace d'un retour en arrière s'éloigne.'", eff: { cadres: 5, intermediaires: 4 } }
+                { txt: "'Les Français veulent un renouvellement.'", eff: { cadres: 2, intermediaires: 2 } },
+                { txt: "'Je salue son parcours, mais l'avenir est ailleurs.'", eff: { retraites: 3, agriculteurs: 2 } },
+                { txt: "'Un de moins ! Le nettoyage continue.'", eff: { inactifs: 3, ouvriers: 3 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Je souhaite bonne chance à la France.'", eff: { retraites: 8, cadres: 4 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Champagne ! On n'a pas oublié le Kärcher !'", eff: { inactifs: 8, ouvriers: 6 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'La menace d'un retour en arrière s'éloigne.'", eff: { cadres: 5, intermediaires: 4 } }
             ]
         },
         {
             date: "20 Nov 2016", title: "Surprise Fillon", desc: "François Fillon écrase tout le monde avec 44%.",
             choices: [
-                { txt: "Analyse : 'Retour de la droite traditionnelle.'", eff: { cadres: 2, retraites: 2 } },
-                { txt: "Dynamique : 'Une vague de fond invisible.'", eff: { agriculteurs: 3, retraites: 3 } },
-                { txt: "Alerte : 'Son programme est brutal.'", eff: { ouvriers: 3, employes: 3 } },
-                { cond: 'macron', txt: "[MACRON] 'Je ne laisserai pas la droite se radicaliser.'", eff: { cadres: 6, intermediaires: 4 } },
-                { cond: 'lepen', txt: "[LE PEN] 'C'est le thatchérisme, il va casser la Sécu.'", eff: { ouvriers: 8, employes: 8 } },
-                { cond: 'fillon', txt: "[FILLON] 'Les Français veulent la vérité.'", eff: { retraites: 10, agriculteurs: 8 } }
+                { txt: "'C'est le retour de la droite traditionnelle.'", eff: { cadres: 2, retraites: 2 } },
+                { txt: "'Une vague de fond que les sondeurs n'avaient pas vue.'", eff: { agriculteurs: 3, retraites: 3 } },
+                { txt: "'Attention, son programme est brutal.'", eff: { ouvriers: 3, employes: 3 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Je ne laisserai pas la droite se radicaliser.'", eff: { cadres: 6, intermediaires: 4 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'C'est le thatchérisme, il va casser la Sécu.'", eff: { ouvriers: 8, employes: 8 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Les Français veulent la vérité.'", eff: { retraites: 10, agriculteurs: 8 } }
             ]
         },
         {
             date: "27 Nov 2016", title: "Victoire de Fillon", desc: "Fillon bat Juppé. Il est le grand favori.",
             choices: [
-                { txt: "Rassemblement : 'S'unir derrière le vainqueur.'", eff: { retraites: 4 } },
-                { txt: "Cible : 'Le candidat de la purge sociale.'", eff: { ouvriers: 3, employes: 3 } },
-                { txt: "Doute : 'Victoire d'un clan radicalisé.'", eff: { cadres: 2, inactifs: 2 } },
-                { cond: 'melenchon', txt: "[MÉLENCHON] 'C'est le Père Fouettard !'", eff: { inactifs: 6, ouvriers: 6 } },
-                { cond: 'lepen', txt: "[LE PEN] 'Délire ultralibéral, aubaine pour nous.'", eff: { ouvriers: 7, employes: 7 } },
-                { cond: 'macron', txt: "[MACRON] 'Je suis le seul progressiste face à la réaction.'", eff: { cadres: 7, intermediaires: 5 } }
+                { txt: "'Toute ma famille politique doit s'unir.'", eff: { retraites: 4 } },
+                { txt: "'Nous avons enfin notre adversaire : le candidat de la purge.'", eff: { ouvriers: 3, employes: 3 } },
+                { txt: "'Cette victoire est celle d'un clan radicalisé.'", eff: { cadres: 2, inactifs: 2 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'C'est le Père Fouettard !'", eff: { inactifs: 6, ouvriers: 6 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Délire ultralibéral, aubaine pour nous.'", eff: { ouvriers: 7, employes: 7 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Je suis le seul progressiste face à la réaction.'", eff: { cadres: 7, intermediaires: 5 } }
             ]
         },
         {
             date: "27 Nov 2016", title: "Programme Radical", desc: "Fillon veut supprimer 500.000 fonctionnaires.",
             choices: [
-                { txt: "Terreur : 'Destruction des services publics.'", eff: { employes: 4, intermediaires: 3 } },
-                { txt: "Réalisme : 'L'État vit au-dessus de ses moyens.'", eff: { cadres: 3, artisans: 3 } },
-                { txt: "Impossibilité : 'La France sera dans la rue.'", eff: { ouvriers: 3, inactifs: 3 } },
-                { cond: 'hamon', txt: "[HAMON] 'Supprimer des infirmières ? C'est criminel.'", eff: { intermediaires: 8, employes: 6 } },
-                { cond: 'fillon', txt: "[FILLON] 'C'est un remède de cheval nécessaire.'", eff: { artisans: 8, cadres: 6 } },
-                { cond: 'poutou', txt: "[POUTOU] 'Toujours les mêmes qui trinquent !'", eff: { ouvriers: 8, inactifs: 6 } }
+                { txt: "'C'est la destruction méthodique de nos services publics.'", eff: { employes: 4, intermediaires: 3 } },
+                { txt: "'Il faut bien faire des économies.'", eff: { cadres: 3, artisans: 3 } },
+                { txt: "'Ce programme est inapplicable, la France sera dans la rue.'", eff: { ouvriers: 3, inactifs: 3 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'Supprimer des infirmières ? C'est criminel.'", eff: { intermediaires: 8, employes: 6 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'C'est un remède de cheval nécessaire.'", eff: { artisans: 8, cadres: 6 } },
+                { cond: 'poutou', txt: "<strong>Poutou :</strong> 'Toujours les mêmes qui trinquent !'", eff: { ouvriers: 8, inactifs: 6 } }
             ]
         },
         {
             date: "1 Déc 2016", title: "Hollande Renonce", desc: "Le président sortant jette l'éponge.",
             choices: [
-                { txt: "Lucidité : 'Constat d'échec terrible.'", eff: { cadres: 2, artisans: 2 } },
-                { txt: "Compassion : 'Décision digne.'", eff: { retraites: 3 } },
-                { txt: "Opportunisme : 'La voie est libre.'", eff: { intermediaires: 3 } },
-                { cond: 'hamon', txt: "[HAMON] 'Je suis prêt à assumer.'", eff: { intermediaires: 6 } },
-                { cond: 'melenchon', txt: "[MÉLENCHON] 'Le capitaine quitte le navire coulé. Bon vent !'", eff: { ouvriers: 7, inactifs: 7 } },
-                { cond: 'macron', txt: "[MACRON] 'Je pense à l'homme avec émotion.'", eff: { retraites: 4, cadres: 3 } }
+                { txt: "'C'est un constat d'échec lucide.'", eff: { cadres: 2, artisans: 2 } },
+                { txt: "'C'est une décision digne.'", eff: { retraites: 3 } },
+                { txt: "'La voie est libre, la gauche doit se reconstruire.'", eff: { intermediaires: 3 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'Je suis prêt à assumer mes responsabilités.'", eff: { intermediaires: 6 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Le capitaine quitte le navire. Bon vent !'", eff: { ouvriers: 7, inactifs: 7 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Je pense à l'homme ce soir.'", eff: { retraites: 4, cadres: 3 } }
             ]
         },
         {
             date: "Déc 2016", title: "Mélenchon Solo", desc: "JLM refuse la primaire de la gauche.",
             choices: [
-                { txt: "Indépendance : 'Pas de tambouille politicienne.'", eff: { inactifs: 3, ouvriers: 2 } },
-                { txt: "Unité : 'Il divise la gauche.'", eff: { intermediaires: 3 } },
-                { txt: "Cohérence : 'On ne débat pas avec ceux qu'on a combattus.'", eff: { inactifs: 3 } },
-                { cond: 'melenchon', txt: "[MÉLENCHON] 'Pourquoi pas un dîner de cons ? Je suis le candidat du peuple.'", eff: { inactifs: 8, ouvriers: 8 } },
-                { cond: 'hamon', txt: "[HAMON] 'L'égo tue l'écologie et le social.'", eff: { intermediaires: 5 } },
-                { cond: 'lepen', txt: "[LE PEN] 'Ces gauchistes sont incapables de s'entendre.'", eff: { ouvriers: 4 } }
+                { txt: "'Pas question de participer à des tambouilles politiciennes.'", eff: { inactifs: 3, ouvriers: 2 } },
+                { txt: "'Il prend le risque de diviser la gauche.'", eff: { intermediaires: 3 } },
+                { txt: "'On ne peut pas débattre avec ceux qu'on a combattus.'", eff: { inactifs: 3 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Pourquoi pas un dîner de cons ? Je suis le candidat du peuple.'", eff: { inactifs: 8, ouvriers: 8 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'L'égo tue l'écologie et le social.'", eff: { intermediaires: 5 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Ces gauchistes sont incapables de s'entendre.'", eff: { ouvriers: 4 } }
             ]
         },
         {
             date: "Déc 2016", title: "Valls démissionne", desc: "Manuel Valls se lance dans la primaire.",
             choices: [
-                { txt: "Trahison : 'Il est responsable du bilan.'", eff: { inactifs: 3, ouvriers: 3 } },
-                { txt: "Autorité : 'Une gauche républicaine et ferme.'", eff: { retraites: 3, cadres: 2 } },
-                { txt: "Rejet : 'Personne ne veut du 49.3.'", eff: { inactifs: 4, intermediaires: 2 } },
-                { cond: 'hamon', txt: "[HAMON] 'Je serai l'anti-Valls.'", eff: { inactifs: 6, intermediaires: 6 } },
-                { cond: 'melenchon', txt: "[MÉLENCHON] 'Tout sauf Valls.'", eff: { inactifs: 8, ouvriers: 6 } },
-                { cond: 'dupont', txt: "[DUPONT-AIGNAN] 'Je suis l'inverse de ce nabot.'", eff: { artisans: 4 } }
+                { txt: "'Il quitte le navire alors qu'il est responsable du bilan.'", eff: { inactifs: 3, ouvriers: 3 } },
+                { txt: "'Il veut incarner une gauche républicaine et ferme.'", eff: { retraites: 3, cadres: 2 } },
+                { txt: "'Personne ne veut du 49.3 à l'Élysée.'", eff: { inactifs: 4, intermediaires: 2 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'Je serai l'anti-Valls.'", eff: { inactifs: 6, intermediaires: 6 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Tout sauf Valls.'", eff: { inactifs: 8, ouvriers: 6 } },
+                { cond: 'dupont', txt: "<strong>Dupont-Aignan :</strong> 'Je suis l'inverse de ce nabot.'", eff: { artisans: 4 } }
             ]
         },
         {
             date: "Déc 2016", title: "Montebourg & Hamon", desc: "Les frondeurs se lancent.",
             choices: [
-                { txt: "Diversité : 'Un vrai débat d'idées.'", eff: { intermediaires: 2 } },
-                { txt: "Fronde : 'Règlement de comptes avec le gouvernement.'", eff: { cadres: 2 } },
-                { txt: "Utopie : 'Ils vendent du rêve.'", eff: { artisans: 3, retraites: 2 } },
-                { cond: 'lepen', txt: "[LE PEN] 'La démondialisation est une urgence !'", eff: { ouvriers: 6, artisans: 6 } },
-                { cond: 'hamon', txt: "[HAMON] 'Revenu universel, écologie... parlons du futur.'", eff: { inactifs: 8, intermediaires: 6 } },
-                { cond: 'macron', txt: "[MACRON] 'La gauche se parle à elle-même.'", eff: { cadres: 5, intermediaires: 3 } }
+                { txt: "'La primaire va permettre un vrai débat d'idées.'", eff: { intermediaires: 2 } },
+                { txt: "'Ce sont les frondeurs qui viennent régler leurs comptes.'", eff: { cadres: 2 } },
+                { txt: "'Ils vendent du rêve sans se soucier de la faisabilité.'", eff: { artisans: 3, retraites: 2 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'La démondialisation est une urgence !'", eff: { ouvriers: 6, artisans: 6 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'Revenu universel, écologie... parlons du futur.'", eff: { inactifs: 8, intermediaires: 6 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'La gauche se parle à elle-même.'", eff: { cadres: 5, intermediaires: 3 } }
             ]
         },
         {
             date: "Fin 2016", title: "Sondages Fillon/Le Pen", desc: "Macron est vu comme une bulle.",
             choices: [
-                { txt: "Fatalisme : 'Le match est plié.'", eff: { retraites: 2 } },
-                { txt: "Contestation : 'Les sondages se trompent (Brexit).' ", eff: { ouvriers: 3 } },
-                { txt: "Persévérance : 'Rien n'est joué.'", eff: { cadres: 2, intermediaires: 2 } },
-                { cond: 'lepen', txt: "[LE PEN] 'Mondialisation sauvage ou Patriotisme : Je suis prête.'", eff: { ouvriers: 7, employes: 7 } },
-                { cond: 'fillon', txt: "[FILLON] 'Je suis le seul vote utile. Macron est un hologramme.'", eff: { retraites: 8, agriculteurs: 6 } },
-                { cond: 'macron', txt: "[MACRON] 'Laissez-les commenter. On va les surprendre.'", eff: { cadres: 7, intermediaires: 6 } }
+                { txt: "'Le match est plié, duel droite-extrême droite.'", eff: { retraites: 2 } },
+                { txt: "'Les sondages se trompent toujours (Brexit, Trump).'", eff: { ouvriers: 3 } },
+                { txt: "'Rien n'est joué, une campagne c'est long.'", eff: { cadres: 2, intermediaires: 2 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Mondialisation sauvage ou Patriotisme : Je suis prête.'", eff: { ouvriers: 7, employes: 7 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Je suis le seul vote utile. Macron est un hologramme.'", eff: { retraites: 8, agriculteurs: 6 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Laissez-les commenter. On va les surprendre.'", eff: { cadres: 7, intermediaires: 6 } }
             ]
         },
         {
             date: "17 Jan 2017", title: "La Gifle", desc: "Valls giflé en Bretagne.",
             choices: [
-                { txt: "Condamnation : 'Inacceptable en démocratie.'", eff: { retraites: 3, cadres: 2 } },
-                { txt: "Humour noir : 'Retour de bâton du 49.3.'", eff: { inactifs: 4, ouvriers: 2 } },
-                { txt: "Victimisation : 'On attaque la République.'", eff: { cadres: 2 } },
-                { cond: 'melenchon', txt: "[MÉLENCHON] 'Valls se prend des claques politiques depuis des mois.'", eff: { inactifs: 6, ouvriers: 4 } },
-                { cond: 'dupont', txt: "[DUPONT-AIGNAN] 'Quand on méprise le peuple...'", eff: { artisans: 5, ouvriers: 3 } }
+                { txt: "'La violence physique n'a aucune place en démocratie.'", eff: { retraites: 3, cadres: 2 } },
+                { txt: "'C'est le retour de bâton du 49.3.'", eff: { inactifs: 4, ouvriers: 2 } },
+                { txt: "'On attaque la gauche car elle défend la République.'", eff: { cadres: 2 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Valls se prend des claques politiques depuis des mois.'", eff: { inactifs: 6, ouvriers: 4 } },
+                { cond: 'dupont', txt: "<strong>Dupont-Aignan :</strong> 'Quand on méprise le peuple...'", eff: { artisans: 5, ouvriers: 3 } }
             ]
         },
         {
             date: "22 Jan 2017", title: "Hamon en Tête", desc: "Surprise au 1er tour de la primaire gauche.",
             choices: [
-                { txt: "Surprise : 'L'utopie bat le réalisme.'", eff: { inactifs: 3, intermediaires: 2 } },
-                { txt: "Sanction : 'Rejet définitif de Hollande/Valls.'", eff: { ouvriers: 3, employes: 3 } },
-                { txt: "Rassemblement : 'Deux gauches irréconciliables.'", eff: { cadres: 2 } },
-                { cond: 'hamon', txt: "[HAMON] 'Un désirable avenir se dessine.'", eff: { inactifs: 8, intermediaires: 6 } },
-                { cond: 'melenchon', txt: "[MÉLENCHON] 'Le capitaine (Valls) se félicite d'être seul à bord.'", eff: { inactifs: 6 } },
-                { cond: 'macron', txt: "[MACRON] 'La gauche se radicalise, venez chez moi.'", eff: { cadres: 6, intermediaires: 5 } }
+                { txt: "'L'utopie a pris le pas sur le réalisme.'", eff: { inactifs: 3, intermediaires: 2 } },
+                { txt: "'C'est le rejet définitif du quinquennat.'", eff: { ouvriers: 3, employes: 3 } },
+                { txt: "'Il faut choisir entre deux gauches irréconciliables.'", eff: { cadres: 2 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'Un désirable avenir se dessine.'", eff: { inactifs: 8, intermediaires: 6 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Le capitaine (Valls) se félicite d'être seul à bord.'", eff: { inactifs: 6 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'La gauche se radicalise, venez chez moi.'", eff: { cadres: 6, intermediaires: 5 } }
             ]
         },
         {
             date: "24 Jan 2017", title: "LE PENELOPE GATE", desc: "Le Canard révèle l'emploi fictif présumé.",
             choices: [
-                { txt: "Prudence : 'Respectons la présomption d'innocence.'", eff: { retraites: 3 } },
-                { txt: "Complot : 'Boule puante du pouvoir !'", eff: { artisans: 2, agriculteurs: 2 } },
-                { txt: "Morale : 'Une insulte à ceux qui travaillent.'", eff: { ouvriers: 4, employes: 4 } },
-                { cond: 'fillon', txt: "[FILLON] 'Scandalisé par la misogynie ! Ma femme travaille !'", eff: { retraites: 6, cadres: -4 } },
-                { cond: 'poutou', txt: "[POUTOU] 'Eux se gavent, nous on trime. Interdiction des licenciements !'", eff: { ouvriers: 8, inactifs: 6 } },
-                { cond: 'lepen', txt: "[LE PEN] 'UMP/PS = Corruption systémique. Dehors !'", eff: { ouvriers: 8, employes: 8 } }
+                { txt: "'Laissons la justice faire son travail.'", eff: { retraites: 3 } },
+                { txt: "'C'est une boule puante lancée par le pouvoir !'", eff: { artisans: 2, agriculteurs: 2 } },
+                { txt: "'Si c'est vrai, c'est une insulte à ceux qui travaillent.'", eff: { ouvriers: 4, employes: 4 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Scandalisé par la misogynie ! Ma femme travaille !'", eff: { retraites: 6, cadres: -4 } },
+                { cond: 'poutou', txt: "<strong>Poutou :</strong> 'Eux se gavent, nous on trime. Interdiction des licenciements !'", eff: { ouvriers: 8, inactifs: 6 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'UMP/PS = Corruption systémique. Dehors !'", eff: { ouvriers: 8, employes: 8 } }
             ]
         },
         {
             date: "25 Jan 2017", title: "Enquête du PNF", desc: "La justice s'active très vite.",
             choices: [
-                { txt: "Accélération : 'Étonnamment rapide.'", eff: { artisans: 2 } },
-                { txt: "Gravité : 'Le Parquet a des éléments.'", eff: { cadres: 3 } },
-                { txt: "Transparence : 'Tout mettre sur la table.'", eff: { intermediaires: 3 } },
-                { cond: 'hamon', txt: "[HAMON] 'Pas d'immunité pour les voleurs.'", eff: { intermediaires: 6, inactifs: 4 } },
-                { cond: 'macron', txt: "[MACRON] 'La probité est une exigence. Je ne commente pas.'", eff: { cadres: 5, retraites: 3 } }
+                { txt: "'La justice va étonnamment vite...'", eff: { artisans: 2 } },
+                { txt: "'L'affaire est sérieuse, le Parquet a des éléments.'", eff: { cadres: 3 } },
+                { txt: "'Il faut tout mettre sur la table immédiatement.'", eff: { intermediaires: 3 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'Pas d'immunité pour les voleurs.'", eff: { intermediaires: 6, inactifs: 4 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'La probité est une exigence. Je ne commente pas.'", eff: { cadres: 5, retraites: 3 } }
             ]
         },
         {
             date: "26 Jan 2017", title: "Fillon au 20H", desc: "'J'aime ma femme'.",
             choices: [
-                { txt: "Émotion : 'Il joue la corde sensible.'", eff: { retraites: 2 } },
-                { txt: "Soutien : 'Combatif et sincère.'", eff: { agriculteurs: 3 } },
-                { txt: "Scepticisme : 'Il n'a rien prouvé.'", eff: { cadres: -2 } },
-                { cond: 'asselineau', txt: "[ASSELINEAU] 'Aimer sa femme c'est bien, la payer avec nos impôts non.'", eff: { artisans: 4 } },
-                { cond: 'fillon', txt: "[FILLON] 'Elle ne faisait pas des confitures !'", eff: { retraites: 5, cadres: -3 } },
-                { cond: 'dupont', txt: "[DUPONT-AIGNAN] 'Défense pathétique.'", eff: { artisans: 4 } }
+                { txt: "'Il tente de jouer sur la corde sensible.'", eff: { retraites: 2 } },
+                { txt: "'Il a été combatif et sincère.'", eff: { agriculteurs: 3 } },
+                { txt: "'Il n'a répondu à rien sur le fond.'", eff: { cadres: -2 } },
+                { cond: 'asselineau', txt: "<strong>Asselineau :</strong> 'Aimer sa femme c'est bien, la payer avec nos impôts non.'", eff: { artisans: 4 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Elle ne faisait pas des confitures !'", eff: { retraites: 5, cadres: -3 } },
+                { cond: 'dupont', txt: "<strong>Dupont-Aignan :</strong> 'Cette défense est pathétique.'", eff: { artisans: 4 } }
             ]
         },
         {
             date: "29 Jan 2017", title: "Hamon Vainqueur", desc: "Le PS choisit la ligne gauche.",
             choices: [
-                { txt: "Légitimité : 'Le PS doit s'unir.'", eff: { intermediaires: 3 } },
-                { txt: "Marginalisation : 'Boulevard pour le centre.'", eff: { cadres: 3 } },
-                { txt: "Fin du parti : 'Chant du cygne.'", eff: { ouvriers: 2 } },
-                { cond: 'hamon', txt: "[HAMON] 'Le revenu universel, idée dont l'heure est venue.'", eff: { inactifs: 8, intermediaires: 6 } },
-                { cond: 'melenchon', txt: "[MÉLENCHON] 'Benoît, quitte ce cadavre (PS) !'", eff: { inactifs: 6, ouvriers: 4 } },
-                { cond: 'poutou', txt: "[POUTOU] 'La fête chez les socio-traîtres.'", eff: { ouvriers: 5 } }
+                { txt: "'Il a une légitimité démocratique, le PS doit s'unir.'", eff: { intermediaires: 3 } },
+                { txt: "'Le PS choisit l'aile gauche, boulevard pour le centre.'", eff: { cadres: 3 } },
+                { txt: "'C'est le chant du cygne du Parti Socialiste.'", eff: { ouvriers: 2 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'Le revenu universel, idée dont l'heure est venue.'", eff: { inactifs: 8, intermediaires: 6 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Benoît, quitte ce cadavre (PS) !'", eff: { inactifs: 6, ouvriers: 4 } },
+                { cond: 'poutou', txt: "<strong>Poutou :</strong> 'La fête chez les socio-traîtres.'", eff: { ouvriers: 5 } }
             ]
         },
         {
             date: "29 Jan 2017", title: "Meeting Villette", desc: "Fillon tente de relancer la machine.",
             choices: [
-                { txt: "Force : 'Le peuple de droite est là.'", eff: { retraites: 4 } },
-                { txt: "Aveuglement : 'Déni total.'", eff: { cadres: -2 } },
-                { txt: "Contre-attaque : 'Assez du tribunal médiatique.'", eff: { artisans: 3 } },
-                { cond: 'fillon', txt: "[FILLON] 'Je suis comme le chêne, je ne plie pas !'", eff: { retraites: 8, agriculteurs: 6 } },
-                { cond: 'asselineau', txt: "[ASSELINEAU] 'On s'en fiche, la France a besoin de moi.'", eff: { artisans: 3 } },
-                { cond: 'lepen', txt: "[LE PEN] 'Il harangue les bourgeois, la France souffre.'", eff: { ouvriers: 6, employes: 6 } }
+                { txt: "'Regardez ce monde ! Le peuple de droite est là.'", eff: { retraites: 4 } },
+                { txt: "'Ils sont dans le déni total.'", eff: { cadres: -2 } },
+                { txt: "'Assez du tribunal médiatique !'", eff: { artisans: 3 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Je suis comme le chêne, je ne plie pas !'", eff: { retraites: 8, agriculteurs: 6 } },
+                { cond: 'asselineau', txt: "<strong>Asselineau :</strong> 'On s'en fiche, la France a besoin de moi.'", eff: { artisans: 3 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Il harangue les bourgeois, la France souffre.'", eff: { ouvriers: 6, employes: 6 } }
             ]
         },
         {
             date: "30 Jan 2017", title: "Audition Police", desc: "Le couple Fillon interrogé.",
             choices: [
-                { txt: "Humiliation : 'Image désastreuse.'", eff: { cadres: -3 } },
-                { txt: "Coopération : 'Prouver sa bonne foi.'", eff: { retraites: 2 } },
-                { txt: "Inquiétude : 'Campagne polluée.'", eff: { intermediaires: 2 } },
-                { cond: 'arthaud', txt: "[ARTHAUD] 'Un ouvrier qui vole un steak fait de la prison, lui...'", eff: { ouvriers: 8 } },
-                { cond: 'dupont', txt: "[DUPONT-AIGNAN] 'Épreuve terrible humainement.'", eff: { retraites: 3 } },
-                { cond: 'macron', txt: "[MACRON] 'Je continue ma route.'", eff: { cadres: 4 } }
+                { txt: "'C'est une image désastreuse pour un favori.'", eff: { cadres: -3 } },
+                { txt: "'C'est normal, ils collaborent pour prouver leur bonne foi.'", eff: { retraites: 2 } },
+                { txt: "'La campagne est polluée, on ne parle plus de rien.'", eff: { intermediaires: 2 } },
+                { cond: 'arthaud', txt: "<strong>Arthaud :</strong> 'Un ouvrier qui vole un steak fait de la prison, lui...'", eff: { ouvriers: 8 } },
+                { cond: 'dupont', txt: "<strong>Dupont-Aignan :</strong> 'Épreuve terrible humainement.'", eff: { retraites: 3 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Je continue ma route.'", eff: { cadres: 4 } }
             ]
         },
         {
             date: "31 Jan 2017", title: "Les Enfants Fillon", desc: "Eux aussi rémunérés ?",
             choices: [
-                { txt: "Accumulation : 'Système clanique.'", eff: { intermediaires: 3 } },
-                { txt: "Défense : 'Ils étaient avocats.'", eff: { cadres: 2 } },
-                { txt: "Ecœurement : 'Il doit se retirer.'", eff: { ouvriers: 4 } },
-                { cond: 'fillon', txt: "[FILLON] 'Avez-vous une limite dans l'ignominie ?'", eff: { retraites: 5, cadres: -5 } },
-                { cond: 'hamon', txt: "[HAMON] 'Moi je veux aider les jeunes qui galèrent.'", eff: { inactifs: 6, intermediaires: 4 } },
-                { cond: 'cheminade', txt: "[CHEMINADE] 'Quel connard...'", eff: { ouvriers: 2 } }
+                { txt: "'Ça commence à faire beaucoup.'", eff: { intermediaires: 3 } },
+                { txt: "'Ils étaient avocats, tout est légal.'", eff: { cadres: 2 } },
+                { txt: "'La coupe est pleine, il doit se retirer.'", eff: { ouvriers: 4 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Avez-vous une limite dans l'ignominie ?'", eff: { retraites: 5, cadres: -5 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'Moi je veux aider les jeunes qui galèrent.'", eff: { inactifs: 6, intermediaires: 4 } },
+                { cond: 'cheminade', txt: "<strong>Cheminade :</strong> 'Quel connard...'", eff: { ouvriers: 2 } }
             ]
         },
         {
             date: "1 Fév 2017", title: "Tenir 15 jours", desc: "Fillon demande un sursis à son camp.",
             choices: [
-                { txt: "Délai : 'Il joue la montre.'", eff: { cadres: -2 } },
-                { txt: "Confiance : 'La justice le blanchira.'", eff: { retraites: 3 } },
-                { txt: "Agonie : 'Démission inéluctable.'", eff: { intermediaires: 2 } },
-                { cond: 'dupont', txt: "[DUPONT-AIGNAN] 'C'est le Titanic ! Changeons de capitaine.'", eff: { artisans: 6 } },
-                { cond: 'fillon', txt: "[FILLON] 'Droit dans les yeux : Tenez bon.'", eff: { retraites: 6, agriculteurs: 4 } },
-                { cond: 'melenchon', txt: "[MÉLENCHON] 'La République n'est pas une salle d'attente.'", eff: { inactifs: 6 } }
+                { txt: "'Il joue la montre.'", eff: { cadres: -2 } },
+                { txt: "'Il promet que la justice le blanchira.'", eff: { retraites: 3 } },
+                { txt: "'C'est l'agonie d'une campagne.'", eff: { intermediaires: 2 } },
+                { cond: 'dupont', txt: "<strong>Dupont-Aignan :</strong> 'C'est le Titanic ! Changeons de capitaine.'", eff: { artisans: 6 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Droit dans les yeux : Tenez bon.'", eff: { retraites: 6, agriculteurs: 4 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'La République n'est pas une salle d'attente.'", eff: { inactifs: 6 } }
             ]
         },
         {
             date: "4 Fév 2017", title: "Ni droite ni gauche", desc: "Meeting de Macron à Lyon.",
             choices: [
-                { txt: "Flou : 'Ça veut dire vide.'", eff: { ouvriers: 2 } },
-                { txt: "Synthèse : 'Le meilleur des deux côtés.'", eff: { cadres: 3 } },
-                { txt: "Marketing : 'Produit bien emballé.'", eff: { artisans: 2 } },
-                { cond: 'macron', txt: "[MACRON] 'PARCE QUE C'EST NOTRE PROJET !!!'", eff: { cadres: 8, intermediaires: 6, inactifs: 4 } },
-                { cond: 'lepen', txt: "[LE PEN] 'Le pire de la droite et de la gauche réunis.'", eff: { ouvriers: 6 } },
-                { cond: 'hamon', txt: "[HAMON] 'Ni droite ni gauche = Droite.'", eff: { inactifs: 5 } }
+                { txt: "'Ça veut surtout dire vide.'", eff: { ouvriers: 2 } },
+                { txt: "'Il prend le meilleur des deux côtés.'", eff: { cadres: 3 } },
+                { txt: "'C'est un produit marketing bien emballé.'", eff: { artisans: 2 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'PARCE QUE C'EST NOTRE PROJET !!!'", eff: { cadres: 8, intermediaires: 6, inactifs: 4 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Le pire de la droite et de la gauche réunis.'", eff: { ouvriers: 6 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'Ni droite ni gauche = Droite.'", eff: { inactifs: 5 } }
             ]
         },
         {
             date: "5 Fév 2017", title: "144 Engagements", desc: "Meeting de Le Pen à Lyon.",
             choices: [
-                { txt: "Danger : 'Liste de courses xénophobe.'", eff: { cadres: 2, intermediaires: 2 } },
-                { txt: "Protection : 'Les Français d'abord.'", eff: { ouvriers: 4, artisans: 3 } },
-                { txt: "Isolement : 'Sortir de l'Euro = Suicide.'", eff: { cadres: 3, retraites: 2 } },
-                { cond: 'lepen', txt: "[LE PEN] 'Au nom du peuple ! On est chez nous !'", eff: { ouvriers: 10, employes: 8, artisans: 6 } },
-                { cond: 'macron', txt: "[MACRON] 'Le repli est une chimère.'", eff: { cadres: 6, intermediaires: 4 } },
-                { cond: 'fillon', txt: "[FILLON] 'Programme d'extrême gauche des années 80.'", eff: { retraites: 5, cadres: 3 } }
+                { txt: "'C'est une liste de courses xénophobe.'", eff: { cadres: 2, intermediaires: 2 } },
+                { txt: "'Enfin un programme qui nous protège.'", eff: { ouvriers: 4, artisans: 3 } },
+                { txt: "'Sortir de l'Euro, c'est le suicide économique.'", eff: { cadres: 3, retraites: 2 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Au nom du peuple ! On est chez nous !'", eff: { ouvriers: 10, employes: 8, artisans: 6 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Le repli est une chimère.'", eff: { cadres: 6, intermediaires: 4 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Programme d'extrême gauche des années 80.'", eff: { retraites: 5, cadres: 3 } }
             ]
         },
         {
             date: "5 Fév 2017", title: "L'Hologramme", desc: "Mélenchon en meeting double (Lyon/Paris).",
             choices: [
-                { txt: "Innovation : 'Modernité.'", eff: { inactifs: 4 } },
-                { txt: "Ubiquité : 'Culte de la personnalité.'", eff: { cadres: 2 } },
-                { txt: "Fond : 'Ferveur populaire.'", eff: { ouvriers: 3 } },
-                { cond: 'melenchon', txt: "[MÉLENCHON] 'L'esprit de l'insoumission n'a pas de frontière !'", eff: { inactifs: 8, ouvriers: 6 } },
-                { cond: 'hamon', txt: "[HAMON] 'L'unité c'est mieux qu'un trucage vidéo.'", eff: { intermediaires: 4 } },
-                { cond: 'poutou', txt: "[POUTOU] 'Ses voix suffiront-elles ?'", eff: { ouvriers: 2 } }
+                { txt: "'C'est une prouesse qui montre sa modernité.'", eff: { inactifs: 4 } },
+                { txt: "'Il veut être partout, c'est le culte de la personnalité.'", eff: { cadres: 2 } },
+                { txt: "'Au-delà du gadget, il y a une ferveur.'", eff: { ouvriers: 3 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'L'esprit de l'insoumission n'a pas de frontière !'", eff: { inactifs: 8, ouvriers: 6 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'L'unité c'est mieux qu'un trucage vidéo.'", eff: { intermediaires: 4 } },
+                { cond: 'poutou', txt: "<strong>Poutou :</strong> 'Ses voix suffiront-elles ?'", eff: { ouvriers: 2 } }
             ]
         },
         {
             date: "6 Fév 2017", title: "Excuses de Fillon", desc: "Conférence de presse : il reste.",
             choices: [
-                { txt: "Repentir : 'Excuses morales.'", eff: { retraites: 3 } },
-                { txt: "Obstination : 'Suicide pour son camp.'", eff: { cadres: -2 } },
-                { txt: "Nouveau départ : 'Abcès percé.'", eff: { artisans: 2 } },
-                { cond: 'fillon', txt: "[FILLON] 'C'était une erreur, pardon. Mais je reste.'", eff: { retraites: 6, agriculteurs: 4 } },
-                { cond: 'dupont', txt: "[DUPONT-AIGNAN] 'Non, c'est non. Je suis le candidat légitime.'", eff: { artisans: 6 } },
-                { cond: 'melenchon', txt: "[MÉLENCHON] 'Rendez l'argent, pas des excuses !'", eff: { ouvriers: 6, inactifs: 6 } }
+                { txt: "'Il s'excuse moralement mais reste.'", eff: { retraites: 3 } },
+                { txt: "'C'est un jusqu'au-boutisme suicidaire.'", eff: { cadres: -2 } },
+                { txt: "'L'abcès est percé, il peut repartir.'", eff: { artisans: 2 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'C'était une erreur, pardon. Mais je reste.'", eff: { retraites: 6, agriculteurs: 4 } },
+                { cond: 'dupont', txt: "<strong>Dupont-Aignan :</strong> 'Non, c'est non. Je suis le candidat légitime.'", eff: { artisans: 6 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Rendez l'argent, pas des excuses !'", eff: { ouvriers: 6, inactifs: 6 } }
             ]
         },
         {
             date: "14 Fév 2017", title: "Alger", desc: "Macron : Colonisation = Crime contre l'humanité.",
             choices: [
-                { txt: "Indignation : 'Insulte aux Pieds-Noirs.'", eff: { retraites: 4, agriculteurs: 3 } },
-                { txt: "Vérité : 'Nommer les choses.'", eff: { inactifs: 4, intermediaires: 2 } },
-                { txt: "Maladresse : 'Diviser pour séduire.'", eff: { cadres: -2 } },
-                { cond: 'lepen', txt: "[LE PEN] 'Il crache sur la France ! Trahison !'", eff: { retraites: 8, agriculteurs: 6, ouvriers: 4 } },
-                { cond: 'fillon', txt: "[FILLON] 'Repentance insupportable.'", eff: { retraites: 7, cadres: 3 } },
-                { cond: 'macron', txt: "[MACRON] 'Un passé qui ne passe pas. Je l'assume.'", eff: { inactifs: 8, intermediaires: 4, retraites: -6 } }
+                { txt: "'C'est une insulte à la mémoire des Pieds-Noirs.'", eff: { retraites: 4, agriculteurs: 3 } },
+                { txt: "'Il a le courage de nommer les choses.'", eff: { inactifs: 4, intermediaires: 2 } },
+                { txt: "'Il divise pour séduire.'", eff: { cadres: -2 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Il crache sur la France ! Trahison !'", eff: { retraites: 8, agriculteurs: 6, ouvriers: 4 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Repentance insupportable.'", eff: { retraites: 7, cadres: 3 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Un passé qui ne passe pas. Je l'assume.'", eff: { inactifs: 8, intermediaires: 4, retraites: -6 } }
             ]
         },
         {
             date: "15 Fév 2017", title: "Ralliement de Rugy", desc: "L'écolo de la primaire rejoint Macron.",
             choices: [
-                { txt: "Parjure : 'Sa parole ne vaut rien.'", eff: { inactifs: 2 } },
-                { txt: "Recomposition : 'Hamon est trop à gauche.'", eff: { cadres: 2 } },
-                { txt: "Attraction : 'Macron aimante tout.'", eff: { intermediaires: 3 } },
-                { cond: 'hamon', txt: "[HAMON] 'Il préfère les places aux convictions.'", eff: { inactifs: 5, intermediaires: 4 } },
-                { cond: 'melenchon', txt: "[MÉLENCHON] 'Girouette qui indique le sens du capital.'", eff: { ouvriers: 5, inactifs: 5 } },
-                { cond: 'arthaud', txt: "[ARTHAUD] 'Tous la même gabegie.'", eff: { ouvriers: 4 } }
+                { txt: "'Sa parole ne vaut rien.'", eff: { inactifs: 2 } },
+                { txt: "'La ligne Hamon est trop à gauche.'", eff: { cadres: 2 } },
+                { txt: "'Macron attire tous les déçus.'", eff: { intermediaires: 3 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'Il préfère les places aux convictions.'", eff: { inactifs: 5, intermediaires: 4 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Girouette qui indique le sens du capital.'", eff: { ouvriers: 5, inactifs: 5 } },
+                { cond: 'arthaud', txt: "<strong>Arthaud :</strong> 'Tous la même gabegie.'", eff: { ouvriers: 4 } }
             ]
         },
         {
             date: "16 Fév 2017", title: "Sondage Choc", desc: "Le Pen largement en tête au 1er tour.",
             choices: [
-                { txt: "Réveil : 'L'heure est grave.'", eff: { cadres: 3, retraites: 2 } },
-                { txt: "Banalisation : 'Effondrement des partis.'", eff: { intermediaires: 2 } },
-                { txt: "Victoire : 'Le peuple se réveille.'", eff: { ouvriers: 4 } },
-                { cond: 'lepen', txt: "[LE PEN] 'Les Français veulent reprendre leur destin.'", eff: { ouvriers: 8, employes: 6 } },
-                { cond: 'melenchon', txt: "[MÉLENCHON] 'La vraie colère c'est nous, pas la haine !'", eff: { inactifs: 6, ouvriers: 4 } },
-                { cond: 'fillon', txt: "[FILLON] 'Seul je peux la battre.'", eff: { retraites: 6, cadres: 4 } }
+                { txt: "'L'heure est grave, danger fasciste.'", eff: { cadres: 3, retraites: 2 } },
+                { txt: "'Elle profite de l'effondrement des partis.'", eff: { intermediaires: 2 } },
+                { txt: "'La dynamique est là, le peuple se réveille.'", eff: { ouvriers: 4 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Les Français veulent reprendre leur destin.'", eff: { ouvriers: 8, employes: 6 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'La vraie colère c'est nous, pas la haine !'", eff: { inactifs: 6, ouvriers: 4 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Seul je peux la battre.'", eff: { retraites: 6, cadres: 4 } }
             ]
         },
         {
             date: "Mi-Fév 2017", title: "L'Hésitation Bayrou", desc: "Le centre va-t-il rallier Macron ?",
             choices: [
-                { txt: "Pivot : 'Faiseur de rois.'", eff: { cadres: 2, intermediaires: 2 } },
-                { txt: "Ironie : 'Négociation de postes.'", eff: { artisans: 2 } },
-                { txt: "Responsabilité : 'Pas de division.'", eff: { retraites: 2 } },
-                { cond: 'macron', txt: "[MACRON] 'Un tournant décisif.'", eff: { cadres: 6, intermediaires: 4, retraites: 4 } },
-                { cond: 'fillon', txt: "[FILLON] 'La girouette qui grince. Reconstitution de l'équipe Hollande.'", eff: { retraites: 5, agriculteurs: 4 } },
-                { cond: 'asselineau', txt: "[ASSELINEAU] 'Macron panique à cause du vote Asselineau !'", eff: { artisans: 4 } }
+                { txt: "'Sa décision fera basculer l'élection.'", eff: { cadres: 2, intermediaires: 2 } },
+                { txt: "'Il attend de voir qui peut lui offrir un poste.'", eff: { artisans: 2 } },
+                { txt: "'Il ne veut pas ajouter de la division.'", eff: { retraites: 2 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Un tournant décisif.'", eff: { cadres: 6, intermediaires: 4, retraites: 4 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'La girouette qui grince.'", eff: { retraites: 5, agriculteurs: 4 } },
+                { cond: 'asselineau', txt: "<strong>Asselineau :</strong> 'Macron panique à cause du vote Asselineau !'", eff: { artisans: 4 } }
+            ]
+        },
+    
+        {
+            date: "17 Fév 2017", title: "Macron à Toulon", desc: "Emmanuel Macron se déplace sur les terres de la droite pour parler sécurité.",
+            choices: [
+                { txt: "'Il prouve qu'il a la stature régalienne.'", eff: { cadres: 3, retraites: 2 } },
+                { txt: "'C'est de l'agitation, son bilan au gouvernement est mauvais.'", eff: { ouvriers: 3, artisans: 3 } },
+                { txt: "'Il parle sécurité mais son programme est vide.'", eff: { intermediaires: 3 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'C'est le pyromane qui explique aux pompiers comment éteindre le feu.'", eff: { ouvriers: 8, artisans: 6, retraites: 4 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'La sécurité est la première des libertés. Je ne la laisse pas au FN.'", eff: { cadres: 6, retraites: 4, intermediaires: 4 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Il découvre la sécurité maintenant. Moi, j'ai l'expérience.'", eff: { retraites: 8, agriculteurs: 6 } }
+            ]
+        },
+        {
+            date: "20 Fév 2017", title: "Perquisition au FN", desc: "La police perquisitionne le siège du Front National.",
+            choices: [
+                { txt: "'Comme par hasard, la justice se réveille en pleine campagne.'", eff: { ouvriers: 3 } },
+                { txt: "'Nul n'est au-dessus des lois.'", eff: { cadres: 3, intermediaires: 3 } },
+                { txt: "'Droite et extrême-droite, même combat : taper dans la caisse.'", eff: { inactifs: 4 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'Le parti de l'ordre est celui du désordre financier.'", eff: { intermediaires: 6, cadres: 4 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'C'est une cabale politique pour nous intimider !'", eff: { ouvriers: 8, employes: 8 } },
+                { cond: 'poutou', txt: "<strong>Poutou :</strong> 'Eux aussi ils piguent ? Fillon, Le Pen... tous pareils.'", eff: { ouvriers: 6, inactifs: 6 } }
+            ]
+        },
+        {
+            date: "21 Fév 2017", title: "Le Cabinet Noir", desc: "Fillon accuse Hollande d'orchestrer ses ennuis judiciaires.",
+            choices: [
+                { txt: "'C'est une théorie du complot pour ne pas répondre sur le fond.'", eff: { cadres: 3, intermediaires: 2 } },
+                { txt: "'Si c'est vrai, c'est un scandale d'État.'", eff: { retraites: 4 } },
+                { txt: "'Il voit des espions partout pour masquer la réalité.'", eff: { inactifs: 2 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'J'accuse le chef de l'État d'être à la tête d'une machination.'", eff: { retraites: 8, agriculteurs: 6, cadres: -4 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'M. Fillon perd ses nerfs. Il n'y a pas de cabinet noir.'", eff: { cadres: 5, intermediaires: 4 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'La seule chose obscure, c'est la provenance de son argent !'", eff: { inactifs: 6, ouvriers: 6 } }
+            ]
+        },
+        {
+            date: "22 Fév 2017", title: "Le Tournant Bayrou", desc: "François Bayrou propose une alliance à Emmanuel Macron.",
+            choices: [
+                { txt: "'C'est le moment de bascule, la victoire devient possible.'", eff: { cadres: 3, intermediaires: 3 } },
+                { txt: "'Bayrou le critiquait hier, ils s'allient aujourd'hui. Incohérent.'", eff: { artisans: 3 } },
+                { txt: "'C'est la reconstitution de l'équipe Hollande.'", eff: { retraites: 2, ouvriers: 2 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'J'accepte ce geste de responsabilité historique.'", eff: { cadres: 6, retraites: 4, intermediaires: 6 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Bayrou et Macron, c'est Hollande sans Hollande.'", eff: { retraites: 6, agriculteurs: 6 } },
+                { cond: 'dupont', txt: "<strong>Dupont-Aignan :</strong> 'La béquille du système vient au secours du candidat du système.'", eff: { ouvriers: 6, artisans: 4 } }
+            ]
+        },
+        {
+            date: "22 Fév 2017", title: "Refus de Convocation", desc: "Marine Le Pen refuse de se rendre à une convocation policière.",
+            choices: [
+                { txt: "'Elle utilise son statut pour échapper à la justice.'", eff: { cadres: 3, intermediaires: 2 } },
+                { txt: "'Elle refuse une mascarade judiciaire politisée.'", eff: { ouvriers: 4 } },
+                { txt: "'Un candidat à la présidence ne devrait pas fuir la police.'", eff: { retraites: 3 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'La trêve républicaine doit s'appliquer. Je n'irai pas.'", eff: { ouvriers: 8, artisans: 6 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'Ils se disent anti-système mais usent de tous les privilèges.'", eff: { inactifs: 5, intermediaires: 5 } },
+                { cond: 'arthaud', txt: "<strong>Arthaud :</strong> 'Un travailleur, on vient le chercher avec les menottes.'", eff: { ouvriers: 8 } }
+            ]
+        },
+        {
+            date: "23 Fév 2017", title: "Alliance Jadot-Hamon", desc: "Yannick Jadot retire sa candidature pour rallier Benoît Hamon.",
+            choices: [
+                { txt: "'La gauche et l'écologie s'unissent enfin.'", eff: { inactifs: 3, intermediaires: 3 } },
+                { txt: "'L'écologie politique disparaît derrière le PS.'", eff: { inactifs: -2 } },
+                { txt: "'Deux faiblesses ne font pas une force.'", eff: { cadres: 2 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'L'écologie n'est plus une option, c'est le cœur du projet.'", eff: { inactifs: 6, intermediaires: 6 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Le corbillard du PS a trouvé une roue de secours.'", eff: { ouvriers: 6, inactifs: 4 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Accord d'appareil. Les écolos pragmatiques sont chez moi.'", eff: { cadres: 5 } }
+            ]
+        },
+        {
+            date: "24 Fév 2017", title: "Information Judiciaire", desc: "L'affaire Fillon s'aggrave, des juges d'instruction sont saisis.",
+            choices: [
+                { txt: "'Le dossier est suffisamment lourd.'", eff: { cadres: 3 } },
+                { txt: "'Sa campagne est cliniquement morte.'", eff: { intermediaires: 2 } },
+                { txt: "'L'acharnement procédural continue.'", eff: { retraites: 3 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Les juges ne décideront pas de cette élection.'", eff: { retraites: 6, agriculteurs: 6 } },
+                { cond: 'asselineau', txt: "<strong>Asselineau :</strong> 'Tout cela montre la corruption de nos élites européistes.'", eff: { artisans: 6 } },
+                { cond: 'poutou', txt: "<strong>Poutou :</strong> 'Il devrait déjà être en garde à vue !'", eff: { ouvriers: 8, inactifs: 6 } }
+            ]
+        },
+        {
+            date: "25 Fév 2017", title: "Programme Macron", desc: "Emmanuel Macron présente son concept de Flexisécurité.",
+            choices: [
+                { txt: "'Catalogue de bonnes intentions sans financement.'", eff: { retraites: 2 } },
+                { txt: "'Il veut précariser les travailleurs.'", eff: { ouvriers: 3 } },
+                { txt: "'Il adapte le modèle scandinave : protéger les gens, pas les jobs.'", eff: { cadres: 3, intermediaires: 3 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'C'est le rêve du MEDEF ! La misère pour tous.'", eff: { ouvriers: 8, inactifs: 6 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Libérer les énergies et protéger les individus.'", eff: { cadres: 6, intermediaires: 6 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Il veut transformer la France en salle de marché.'", eff: { ouvriers: 6, artisans: 6 } }
+            ]
+        },
+        {
+            date: "28 Fév 2017", title: "Démission Le Roux", desc: "Le ministre de l'Intérieur démissionne pour des emplois familiaux.",
+            choices: [
+                { txt: "'Le PS fait exactement comme Fillon.'", eff: { ouvriers: 3 } },
+                { txt: "'Au moins lui, il démissionne tout de suite.'", eff: { cadres: 2 } },
+                { txt: "'Encore une affaire... La République est malade.'", eff: { inactifs: 3 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Deux poids, deux mesures avec la presse.'", eff: { retraites: 6 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'L'exemplarité ne se négocie pas à gauche.'", eff: { intermediaires: 5 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'UMPS, je vous l'avais dit. Ils se tiennent tous.'", eff: { ouvriers: 8, employes: 6 } }
+            ]
+        },
+        {
+            date: "1 Mar 2017", title: "Je ne céderai pas", desc: "Fillon annonce qu'il maintient sa candidature envers et contre tout.",
+            choices: [
+                { txt: "'C'est une fuite en avant.'", eff: { cadres: 2 } },
+                { txt: "'Quel courage ! Il tient bon.'", eff: { retraites: 4, agriculteurs: 3 } },
+                { txt: "'Il entraîne sa famille politique dans sa chute.'", eff: { intermediaires: 2 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Je ne me retirerai pas. Je m'en remets au suffrage universel.'", eff: { retraites: 8, agriculteurs: 8 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'On ne peut pas présider la France en défiant la justice.'", eff: { cadres: 5, intermediaires: 4 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'La convocation par la justice est un devoir !'", eff: { ouvriers: 6 } }
+            ]
+        },
+        {
+            date: "2 Mar 2017", title: "L'Hémorragie", desc: "Défections en cascade dans l'équipe de campagne de Fillon.",
+            choices: [
+                { txt: "'Le roi est nu, c'est fini.'", eff: { cadres: 2 } },
+                { txt: "'Les faibles partent, les vrais restent.'", eff: { retraites: 3 } },
+                { txt: "'Ils sauvent leur carrière, pas la morale.'", eff: { ouvriers: 3 } },
+                { cond: 'dupont', txt: "<strong>Dupont-Aignan :</strong> 'Orphelins de la droite, venez à moi !'", eff: { artisans: 6, retraites: 4 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Ceux qui partent n'ont pas le cuir assez solide.'", eff: { retraites: 5 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'Ce spectacle est pathétique.'", eff: { intermediaires: 4 } }
+            ]
+        },
+        {
+            date: "2 Mar 2017", title: "Le Plan B ?", desc: "Alain Juppé est pressenti pour remplacer Fillon.",
+            choices: [
+                { txt: "'C'est la seule solution pour éviter le désastre.'", eff: { cadres: 3, retraites: 2 } },
+                { txt: "'On ne peut pas annuler le résultat de la primaire.'", eff: { agriculteurs: 3 } },
+                { txt: "'Tout est suspendu à sa décision.'", eff: { intermediaires: 2 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Qu'ils changent de cheval, c'est la même politique.'", eff: { ouvriers: 6 } },
+                { cond: 'asselineau', txt: "<strong>Asselineau :</strong> 'Plan A, Plan B... Ce sont les plans de Bruxelles.'", eff: { artisans: 6 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Juppé ou Fillon, le conservatisme reste le même.'", eff: { cadres: 5 } }
+            ]
+        },
+        {
+            date: "5 Mar 2017", title: "Le Trocadéro", desc: "Fillon réunit ses soutiens sous la pluie pour une démonstration de force.",
+            choices: [
+                { txt: "'Succès indéniable, le peuple de droite est vivant.'", eff: { retraites: 4, agriculteurs: 3 } },
+                { txt: "'Foule anti-juges inquiétante.'", eff: { cadres: 2, intermediaires: 2 } },
+                { txt: "'Ils sont nombreux mais isolés.'", eff: { inactifs: 2 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Ils pensaient que j'étais seul ! La France est là !'", eff: { retraites: 8, agriculteurs: 8 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'On ne construit pas un projet sur le ressentiment.'", eff: { cadres: 5 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Les gens aux écus sont sortis. Grand bien leur fasse.'", eff: { ouvriers: 6, inactifs: 6 } }
+            ]
+        },
+        {
+            date: "6 Mar 2017", title: "Juppé Renonce", desc: "Alain Juppé annonce qu'il ne sera pas le recours.",
+            choices: [
+                { txt: "'La messe est dite, la droite garde son boulet.'", eff: { cadres: 2 } },
+                { txt: "'Analyse dure mais juste de l'obstination de Fillon.'", eff: { intermediaires: 3 } },
+                { txt: "'L'incertitude est levée, retour au combat.'", eff: { retraites: 3 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Le débat est clos. En avant.'", eff: { retraites: 6, agriculteurs: 6 } },
+                { cond: 'dupont', txt: "<strong>Dupont-Aignan :</strong> 'La droite s'est suicidée. Je tends la main.'", eff: { artisans: 6 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Fillon est un zombie politique.'", eff: { ouvriers: 6 } }
+            ]
+        },
+        {
+            date: "12 Mar 2017", title: "L'affaire des Costumes", desc: "Fillon s'est fait offrir des costumes de luxe par un avocat.",
+            choices: [
+                { txt: "'Des costumes à 6000€... déconnexion totale.'", eff: { inactifs: 4, ouvriers: 3 } },
+                { txt: "'Un président ne doit rien devoir à personne.'", eff: { cadres: 3 } },
+                { txt: "'On tombe dans le voyeurisme.'", eff: { retraites: 2 } },
+                { cond: 'poutou', txt: "<strong>Poutou :</strong> 'Moi mes costards c'est chez Tati et je les paye !'", eff: { ouvriers: 8, inactifs: 8 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Un ami m'offre des costumes. Et alors ?'", eff: { retraites: 5 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Ça ruisselle... mais seulement dans leurs poches !'", eff: { inactifs: 6, ouvriers: 6 } }
+            ]
+        },
+        {
+            date: "14 Mar 2017", title: "Mise en examen", desc: "François Fillon est officiellement mis en examen.",
+            choices: [
+                { txt: "'Première historique qui fragilise la fonction.'", eff: { cadres: 3 } },
+                { txt: "'Il reste innocent jusqu'à preuve du contraire.'", eff: { retraites: 3 } },
+                { txt: "'Il aurait dû se retirer.'", eff: { intermediaires: 3 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'Un homme mis en examen ne peut pas gouverner.'", eff: { intermediaires: 5 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Je suis mis en examen ? Très bien. Rien ne m'arrêtera.'", eff: { retraites: 6, agriculteurs: 6 } },
+                { cond: 'arthaud', txt: "<strong>Arthaud :</strong> 'Justice de classe ! Un ouvrier aurait déjà perdu son boulot.'", eff: { ouvriers: 8 } }
+            ]
+        },
+        {
+            date: "16 Mar 2017", title: "Hamon Lâché", desc: "Benoît Hamon s'effondre dans les sondages, lâché par le PS.",
+            choices: [
+                { txt: "'Il est écrasé par le vote utile.'", eff: { intermediaires: 3 } },
+                { txt: "'Son propre camp le saborde.'", eff: { inactifs: 3 } },
+                { txt: "'Les sondages ne font pas l'élection.'", eff: { cadres: 2 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Benoît, ne t'accroche pas au mât du PS qui coule.'", eff: { inactifs: 6, intermediaires: 6 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'Je sens le vent de face, mais je tiens le cap.'", eff: { inactifs: 4, intermediaires: 4 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Son parti ne le suit pas. La cohérence est chez nous.'", eff: { cadres: 5 } }
+            ]
+        },
+        {
+            date: "18 Mar 2017", title: "Marche pour la VIe République", desc: "Mélenchon réunit une foule immense à la Bastille.",
+            choices: [
+                { txt: "'La gauche de combat est de retour.'", eff: { inactifs: 4, ouvriers: 3 } },
+                { txt: "'Les élections se jouent dans les urnes, pas dans la rue.'", eff: { retraites: 3 } },
+                { txt: "'Il réussit à mobiliser la jeunesse.'", eff: { intermediaires: 3 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Nous sommes la force qui va tout changer ! Dégagez-les !'", eff: { inactifs: 8, ouvriers: 8 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Il amuse la galerie à Bastille, mais les ouvriers votent pour moi.'", eff: { ouvriers: 5 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Pendant qu'ils agitent des drapeaux rouges, je travaille.'", eff: { retraites: 5 } }
+            ]
+        },
+        {
+            date: "20 Mar 2017", title: "Le Grand Débat", desc: "Premier débat télévisé avec les 5 principaux candidats.",
+            choices: [
+                { txt: "'Un déni de démocratie pour les 6 candidats écartés.'", eff: { artisans: 3 } },
+                { txt: "'Enfin les projets se heurtent.'", eff: { cadres: 3 } },
+                { txt: "'Certains ont dominé, d'autres ont disparu.'", eff: { intermediaires: 3 } },
+                { cond: 'dupont', txt: "<strong>Dupont-Aignan :</strong> 'Je quitte le plateau ! On censure la démocratie !'", eff: { artisans: 8, ouvriers: 6 } },
+                { cond: 'lassalle', txt: "<strong>Lassalle :</strong> 'La France des campagnes nous regarde.'", eff: { agriculteurs: 8 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Il y a ceux qui proposent et ceux qui invectivent.'", eff: { cadres: 5 } }
+            ]
+        },
+        {
+            date: "20 Mar 2017", title: "Pudeur de Gazelle", desc: "Passe d'armes entre Mélenchon et Fillon/Le Pen sur la religion.",
+            choices: [
+                { txt: "'C'est la phrase de la soirée.'", eff: { inactifs: 4 } },
+                { txt: "'Il est brillant mais trop clivant.'", eff: { retraites: 3 } },
+                { txt: "'Il a dominé sur le fond.'", eff: { intermediaires: 3 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'S'il vous plaît... pas de pudeur de gazelle !'", eff: { inactifs: 8, intermediaires: 6 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Talentueux, mais ses recettes sont communistes.'", eff: { artisans: 4 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Le sens de la formule ne fait pas une politique.'", eff: { cadres: 4 } }
+            ]
+        },
+        {
+            date: "23 Mar 2017", title: "Trahison de Valls", desc: "Manuel Valls appelle à voter Macron dès le 1er tour.",
+            choices: [
+                { txt: "'C'est un boulet pour Macron.'", eff: { ouvriers: 3 } },
+                { txt: "'Le PS est officiellement mort.'", eff: { cadres: 3 } },
+                { txt: "'Aucune parole, il trahit le vote de la primaire.'", eff: { intermediaires: 3 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'C'est une honte. Je suis écœuré.'", eff: { inactifs: 6 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Je le remercie, mais je ne l'ai pas sollicité.'", eff: { cadres: 5, intermediaires: 4 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Bon débarras ! L'eau sale va à l'égout.'", eff: { inactifs: 8, ouvriers: 6 } }
+            ]
+        },
+        {
+            date: "24 Mar 2017", title: "Le Pen au Kremlin", desc: "Marine Le Pen s'affiche avec Vladimir Poutine.",
+            choices: [
+                { txt: "'Elle va chercher ses ordres à Moscou.'", eff: { cadres: 3 } },
+                { txt: "'Elle montre sa stature internationale.'", eff: { ouvriers: 3, artisans: 3 } },
+                { txt: "'Signal terrible pour la démocratie.'", eff: { intermediaires: 3 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Je partage la vision d'un monde multipolaire.'", eff: { ouvriers: 6, employes: 6 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Je ne serai pas le vassal de Poutine.'", eff: { cadres: 6, intermediaires: 5 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'C'est l'alliance des nationalistes.'", eff: { inactifs: 5 } }
+            ]
+        },
+        {
+            date: "28 Mar 2017", title: "Appel des Grands Élus", desc: "Les maires de droite lâchent Fillon pour Macron.",
+            choices: [
+                { txt: "'Les rats quittent le navire.'", eff: { ouvriers: 3 } },
+                { txt: "'Ils voient bien que Fillon ne peut plus gagner.'", eff: { cadres: 3 } },
+                { txt: "'La droite se reconstitue au centre.'", eff: { retraites: 3 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Ils vont servir la soupe aux socialistes déguisés.'", eff: { retraites: 6 } },
+                { cond: 'dupont', txt: "<strong>Dupont-Aignan :</strong> 'Ils trahissent ! Venez chez moi !'", eff: { artisans: 6 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Je tends la main aux républicains de bonne volonté.'", eff: { retraites: 5, cadres: 5 } }
+            ]
+        },
+        {
+            date: "Fin Mars 2017", title: "La Remontada", desc: "Mélenchon double Hamon dans les sondages.",
+            choices: [
+                { txt: "'La dynamique est chez Mélenchon.'", eff: { intermediaires: 3 } },
+                { txt: "'La gauche radicale prend le dessus.'", eff: { retraites: 2 } },
+                { txt: "'Effondrement logique du PS.'", eff: { cadres: 2 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'On les double ! La force du peuple !'", eff: { inactifs: 8, ouvriers: 8 } },
+                { cond: 'hamon', txt: "<strong>Hamon :</strong> 'Je ne suis pas dans la course aux petits chevaux.'", eff: { intermediaires: 4 } },
+                { cond: 'arthaud', txt: "<strong>Arthaud :</strong> 'Mélenchon ou Hamon, c'est toujours le système.'", eff: { ouvriers: 4 } }
+            ]
+        },
+        {
+            date: "4 Avril 2017", title: "Débat à 11", desc: "Tous les candidats sont réunis sur BFMTV.",
+            choices: [
+                { txt: "'C'est inaudible, le chaos.'", eff: { retraites: 3 } },
+                { txt: "'Rafraîchissant d'entendre les petits candidats.'", eff: { inactifs: 3, ouvriers: 3 } },
+                { txt: "'4 heures d'ennui...'", eff: { intermediaires: 2 } },
+                { cond: 'cheminade', txt: "<strong>Cheminade :</strong> 'Je suis le seul à parler de la colonisation de Mars !'", eff: { inactifs: 6 } },
+                { cond: 'asselineau', txt: "<strong>Asselineau :</strong> 'On vous cache tout ! Regardez l'article 50 !'", eff: { artisans: 6 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Restons calmes et avançons sur le fond.'", eff: { cadres: 5 } }
+            ]
+        },
+        {
+            date: "4 Avril 2017", title: "Immunité Ouvrière", desc: "Poutou attaque frontalement Fillon et Le Pen.",
+            choices: [
+                { txt: "'Séquence culte, il a tout dit.'", eff: { inactifs: 4 } },
+                { txt: "'Agression de bas étage.'", eff: { retraites: 3 } },
+                { txt: "'Il a mis le doigt sur l'injustice.'", eff: { ouvriers: 4 } },
+                { cond: 'poutou', txt: "<strong>Poutou :</strong> 'Nous on n'a pas d'immunité ouvrière !'", eff: { ouvriers: 10, inactifs: 8 } },
+                { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Ne m'agitez pas votre doigt sous le nez !'", eff: { employes: 4 } },
+                { cond: 'fillon', txt: "<strong>Fillon :</strong> '(Silence) Je ne répondrai pas.'", eff: { retraites: 2 } }
+            ]
+        },
+        {
+            date: "4 Avril 2017", title: "Le Style Lassalle", desc: "Jean Lassalle marque les esprits par son authenticité.",
+            choices: [
+                { txt: "'Il est authentique.'", eff: { agriculteurs: 4 } },
+                { txt: "'C'est lunaire, d'une autre époque.'", eff: { cadres: 2 } },
+                { txt: "'Il rappelle que la France n'est pas que Paris.'", eff: { retraites: 3 } },
+                { cond: 'lassalle', txt: "<strong>Lassalle :</strong> 'Je suis un berger à l'Élysée.'", eff: { agriculteurs: 10, artisans: 6 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'M. Lassalle apporte une poésie nécessaire.'", eff: { intermediaires: 4 } },
+                { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Jean, tu es un homme honnête.'", eff: { ouvriers: 4 } }
             ]
         }
     ];
@@ -578,14 +869,32 @@
             if(POPULATION[k]) POPULATION[k].score = c.stats[k];
         }
 
-        // Init Events: On utilise la liste fixe SCENARIO_EVENTS
-        // On copie le tableau pour ne pas modifier l'original
-        gameState.eventQueue = [...SCENARIO_EVENTS]; 
+        // --- ALGORITHME DE SÉLECTION CHRONOLOGIQUE ---
+        
+        // 1. On crée une copie et on mélange tout de façon aléatoire
+        let shuffled = [...SCENARIO_EVENTS].sort(() => 0.5 - Math.random());
 
-        // UI
+        // 2. On garde seulement les 30 premiers (la sélection aléatoire)
+        // (Note: Si vous avez moins de 30 events au total, ça prendra tout)
+        let selected = shuffled.slice(0, 30);
+
+        // 3. On retrie cette sélection pour remettre les dates dans l'ordre
+        // Astuce : On compare leur index dans le tableau original (qui est déjà trié par date)
+        selected.sort((a, b) => {
+            return SCENARIO_EVENTS.indexOf(a) - SCENARIO_EVENTS.indexOf(b);
+        });
+
+        gameState.eventQueue = selected;
+
+        // Mise à jour de l'UI
         document.getElementById('selection-screen').classList.remove('active');
         document.getElementById('game-screen').classList.add('active');
         document.getElementById('candidate-name').innerText = c.name;
+
+        // S'assurer que l'affichage du tour max correspond au nombre d'events choisis
+        // (ex: SEMAINE 1 / 30)
+        const MAX_TURNS_DISPLAY = selected.length; 
+        document.getElementById('turn-count').innerText = `1/${MAX_TURNS_DISPLAY}`;
 
         updateUI();
         playTurn();
@@ -630,10 +939,8 @@
             let btn = document.createElement('div');
             btn.className = 'choice-btn';
             
-            // Si c'est un choix spécifique, on ajoute un petit label visuel
-            let label = ch.cond ? `<span class="spec-tag">RÉPONSE SPÉCIFIQUE</span>` : "";
-            
-            btn.innerHTML = `${label}➤ ${ch.txt}`;
+            // Just display text directly
+            btn.innerHTML = `➤ ${ch.txt}`;
             btn.onclick = () => {
                 applyEffect(ch.eff);
                 nextTurn();
