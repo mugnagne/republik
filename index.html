@@ -242,36 +242,36 @@
     // --- EVENTS DE SEUIL ---
     const THRESHOLD_EVENTS = {
         cadres: {
-            low: { threshold: 10, title: "Exil des Cerveaux", desc: "Panique à la Défense ! Les cadres: fuient.", btn: "Tenter de rassurer", eff: { employes: -5, artisans: -5, inactifs: 5 } },
-            high: { threshold: 90, title: "Soutien du CAC 40", desc: "Le patronat finance votre campagne.", btn: "Accepter le soutien", eff: { artisans: 5, employes: 3, ouvriers: -2 } }
+            low: { threshold: 1, title: "Exil des Cerveaux", desc: "Panique à la Défense ! Les cadres: fuient.", btn: "Tenter de rassurer", eff: { employes: -5, artisans: -5, inactifs: 5 } },
+            high: { threshold: 60, title: "Soutien du CAC 40", desc: "Le patronat finance votre campagne.", btn: "Accepter le soutien", eff: { artisans: 5, employes: 3, ouvriers: -2 } }
         },
         ouvriers: {
-            low: { threshold: 10, title: "Occupations d'Usines", desc: "Séquestrations de patrons dans le Nord.", btn: "Condamner les violences", eff: { cadres: 3, inactifs: 4, employes: -4 } },
-            high: { threshold: 90, title: "Le Mur Bleu de Chauffe", desc: "Les syndicats appellent à voter pour vous.", btn: "Saluer le monde du travail", eff: { employes: 5, inactifs: 3, cadres: -3 } }
+            low: { threshold: 1, title: "Occupations d'Usines", desc: "Séquestrations de patrons dans le Nord.", btn: "Condamner les violences", eff: { cadres: 3, inactifs: 4, employes: -4 } },
+            high: { threshold: 60, title: "Le Mur Bleu de Chauffe", desc: "Les syndicats appellent à voter pour vous.", btn: "Saluer le monde du travail", eff: { employes: 5, inactifs: 3, cadres: -3 } }
         },
         retraites: {
-            low: { threshold: 10, title: "Révolte des Cheveux Blancs", desc: "Les retraités vident leurs livrets A.", btn: "Appeler au calme", eff: { cadres: -5, artisans: -4 } },
-            high: { threshold: 90, title: "L'Armée des Ombres", desc: "Le vote senior est verrouillé pour vous.", btn: "Remercier nos aînés", eff: { agriculteurs: 4, cadres: 2, inactifs: -2 } }
+            low: { threshold: 1, title: "Révolte des Cheveux Blancs", desc: "Les retraités vident leurs livrets A.", btn: "Appeler au calme", eff: { cadres: -5, artisans: -4 } },
+            high: { threshold: 60, title: "L'Armée des Ombres", desc: "Le vote senior est verrouillé pour vous.", btn: "Remercier nos aînés", eff: { agriculteurs: 4, cadres: 2, inactifs: -2 } }
         },
         inactifs: {
-            low: { threshold: 10, title: "Universités Bloquées", desc: "Barricades à la Sorbonne.", btn: "Rétablir l'ordre", eff: { retraites: 3, cadres: 2, intermediaires: -5 } },
-            high: { threshold: 90, title: "Hype Absolue", desc: "Vous êtes une star sur TikTok.", btn: "Surfer sur le buzz", eff: { intermediaires: 5, ouvriers: 2, retraites: -2 } }
+            low: { threshold: 1, title: "Universités Bloquées", desc: "Barricades à la Sorbonne.", btn: "Rétablir l'ordre", eff: { retraites: 3, cadres: 2, intermediaires: -5 } },
+            high: { threshold: 60, title: "Hype Absolue", desc: "Vous êtes une star sur TikTok.", btn: "Surfer sur le buzz", eff: { intermediaires: 5, ouvriers: 2, retraites: -2 } }
         },
         agriculteurs: {
-            low: { threshold: 10, title: "Opération Escargot", desc: "Fumier déversé devant votre QG.", btn: "Nettoyer", eff: { cadres: -3, artisans: -2 } },
-            high: { threshold: 90, title: "Candidat du Terroir", desc: "La FNSEA vous soutient.", btn: "Boire un coup", eff: { retraites: 4, artisans: 3 } }
+            low: { threshold: 1, title: "Opération Escargot", desc: "Fumier déversé devant votre QG.", btn: "Nettoyer", eff: { cadres: -3, artisans: -2 } },
+            high: { threshold: 60, title: "Candidat du Terroir", desc: "La FNSEA vous soutient.", btn: "Boire un coup", eff: { retraites: 4, artisans: 3 } }
         },
         artisans: {
-            low: { threshold: 10, title: "Rideau de Fer", desc: "Grève des commerçants.", btn: "Dialoguer", eff: { cadres: -4, retraites: -3 } },
-            high: { threshold: 90, title: "La France qui se lève tôt", desc: "Les artisans: font votre pub.", btn: "Se féliciter", eff: { retraites: 3, ouvriers: 2 } }
+            low: { threshold: 1, title: "Rideau de Fer", desc: "Grève des commerçants.", btn: "Dialoguer", eff: { cadres: -4, retraites: -3 } },
+            high: { threshold: 60, title: "La France qui se lève tôt", desc: "Les artisans: font votre pub.", btn: "Se féliciter", eff: { retraites: 3, ouvriers: 2 } }
         },
         intermediaires: {
-            low: { threshold: 10, title: "Grève des Services Publics", desc: "Profs et infirmières dans la rue.", btn: "Dénoncer", eff: { cadres: -2, employes: -4 } },
-            high: { threshold: 90, title: "Hégémonie Culturelle", desc: "Les salles des profs sont acquises.", btn: "Soutenir", eff: { inactifs: 5, cadres: 2 } }
+            low: { threshold: 1, title: "Grève des Services Publics", desc: "Profs et infirmières dans la rue.", btn: "Dénoncer", eff: { cadres: -2, employes: -4 } },
+            high: { threshold: 60, title: "Hégémonie Culturelle", desc: "Les salles des profs sont acquises.", btn: "Soutenir", eff: { inactifs: 5, cadres: 2 } }
         },
         employes: {
-            low: { threshold: 10, title: "Colère Silencieuse", desc: "Boycott massif de vos meetings.", btn: "Séduire", eff: { ouvriers: -3, intermediaires: -2 } },
-            high: { threshold: 90, title: "Vague Populaire", desc: "Le peuple tertiaire vous suit.", btn: "Incarner", eff: { ouvriers: 4, intermediaires: 3 } }
+            low: { threshold: 1, title: "Colère Silencieuse", desc: "Boycott massif de vos meetings.", btn: "Séduire", eff: { ouvriers: -3, intermediaires: -2 } },
+            high: { threshold: 60, title: "Vague Populaire", desc: "Le peuple tertiaire vous suit.", btn: "Incarner", eff: { ouvriers: 4, intermediaires: 3 } }
         }
     };
 
