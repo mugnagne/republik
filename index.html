@@ -179,14 +179,14 @@
     };
 
     const POPULATION = {
-        agriculteurs: { label: "Agriculteurs", weight: 1.5, score: 0 },
-        artisans: { label: "Artisans/Chefs", weight: 6.7, score: 0 },
-        cadres: { label: "Cadres/Sup", weight: 22.4, score: 0 },
+        agriculteurs: { label: "agriculteurs:", weight: 1.5, score: 0 },
+        artisans: { label: "artisans:/Chefs", weight: 6.7, score: 0 },
+        cadres: { label: "cadres:/Sup", weight: 22.4, score: 0 },
         intermediaires: { label: "Prof. Interm.", weight: 25.1, score: 0 },
         employes: { label: "Employés", weight: 25.2, score: 0 },
-        ouvriers: { label: "Ouvriers", weight: 18.6, score: 0 },
+        ouvriers: { label: "ouvriers:", weight: 18.6, score: 0 },
         retraites: { label: "Retraités", weight: 27.0, score: 0 },
-        inactifs: { label: "Jeunes/Inactifs", weight: 16.0, score: 0 }
+        inactifs: { label: "Jeunes/inactifs:", weight: 16.0, score: 0 }
     };
 
     // --- CANDIDATS (Avec Configuration Inertie) ---
@@ -239,7 +239,7 @@
     // --- EVENTS DE SEUIL ---
     const THRESHOLD_EVENTS = {
         cadres: {
-            low: { threshold: 10, title: "Exil des Cerveaux", desc: "Panique à la Défense ! Les cadres fuient.", btn: "Tenter de rassurer", eff: { employes: -5, artisans: -5, inactifs: 5 } },
+            low: { threshold: 10, title: "Exil des Cerveaux", desc: "Panique à la Défense ! Les cadres: fuient.", btn: "Tenter de rassurer", eff: { employes: -5, artisans: -5, inactifs: 5 } },
             high: { threshold: 90, title: "Soutien du CAC 40", desc: "Le patronat finance votre campagne.", btn: "Accepter le soutien", eff: { artisans: 5, employes: 3, ouvriers: -2 } }
         },
         ouvriers: {
@@ -260,7 +260,7 @@
         },
         artisans: {
             low: { threshold: 10, title: "Rideau de Fer", desc: "Grève des commerçants.", btn: "Dialoguer", eff: { cadres: -4, retraites: -3 } },
-            high: { threshold: 90, title: "La France qui se lève tôt", desc: "Les artisans font votre pub.", btn: "Se féliciter", eff: { retraites: 3, ouvriers: 2 } }
+            high: { threshold: 90, title: "La France qui se lève tôt", desc: "Les artisans: font votre pub.", btn: "Se féliciter", eff: { retraites: 3, ouvriers: 2 } }
         },
         intermediaires: {
             low: { threshold: 10, title: "Grève des Services Publics", desc: "Profs et infirmières dans la rue.", btn: "Dénoncer", eff: { cadres: -2, employes: -4 } },
@@ -274,7 +274,7 @@
 
     // --- SCENARIO (Liste Chronologique complète) ---
     const SCENARIO_EVENTS = [
-        [
+        
     {
         date: "6 Avril 2016", 
         title: "Lancement d'En Marche !", 
@@ -893,7 +893,7 @@
             { txt: "'Les élections se jouent dans les urnes, pas dans la rue.'", eff: { retraites: 3, agriculteurs: 2, cadres: -1, ouvriers: -2 } },
             { txt: "'Il réussit à mobiliser la jeunesse.'", eff: { intermediaires: 3, inactifs: 2, cadres: -1, retraites: -2 } },
             { cond: 'melenchon', txt: "<strong>Mélenchon :</strong> 'Nous sommes la force qui va tout changer ! Dégagez-les !'", eff: { inactifs: 7, ouvriers: 7, cadres: -5, retraites: -5, intermediaires: -2 } },
-            { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Il amuse la galerie à Bastille, mais les ouvriers votent pour moi.'", eff: { ouvriers: 5, employes: 3, cadres: -3, inactifs: -3 } },
+            { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'Il amuse la galerie à Bastille, mais les ouvriers: votent pour moi.'", eff: { ouvriers: 5, employes: 3, cadres: -3, inactifs: -3 } },
             { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Pendant qu'ils agitent des drapeaux rouges, je travaille.'", eff: { retraites: 4, agriculteurs: 3, cadres: -2, ouvriers: -3 } }
         ]
     },
