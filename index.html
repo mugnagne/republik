@@ -170,7 +170,16 @@
 <script>
     // --- CONFIGURATION ---
     const IMPACT_FACTOR = 0.20; 
-    
+
+    // --- SYSTÈME D'INERTIE ---
+    // Les multiplicateurs selon la relation du candidat avec la catégorie
+    const INERTIA_RULES = {
+        LOVE: { bonus: 1.5, malus: 0.5, icon: "❤️" },   // Pardonne tout, s'enthousiasme vite
+        LIKE: { bonus: 1.2, malus: 0.8, icon: "👍" },   // Bienveillant
+        NEUTRAL: { bonus: 1.0, malus: 1.0, icon: "" },
+        DISLIKE: { bonus: 0.8, malus: 1.2, icon: "😒" }, // Méfiant
+        HATE: { bonus: 0.5, malus: 1.5, icon: "💀" }    // Ne pardonne rien, difficile à convaincre
+    };
     // --- DONNEES POPULATION ---
     const POPULATION = {
         agriculteurs: { label: "Agriculteurs", weight: 1.5, score: 0 },
@@ -184,18 +193,50 @@
     };
 
     // --- CANDIDATS ---
-    const CANDIDATES = [
-        { id: 'macron', name: "E. MACRON", party: "En Marche!", stats: { agriculteurs: 15, artisans: 15, cadres: 32, intermediaires: 26, employes: 18, ouvriers: 12, retraites: 22, inactifs: 22 } },
-        { id: 'fillon', name: "F. FILLON", party: "Les Républicains", stats: { agriculteurs: 45, artisans: 35, cadres: 30, intermediaires: 18, employes: 10, ouvriers: 5, retraites: 42, inactifs: 8 } },
-        { id: 'lepen', name: "M. LE PEN", party: "Front National", stats: { agriculteurs: 20, artisans: 28, cadres: 8, intermediaires: 22, employes: 38, ouvriers: 48, retraites: 12, inactifs: 20 } },
-        { id: 'melenchon', name: "J-L. MÉLENCHON", party: "LFI", stats: { agriculteurs: 3, artisans: 5, cadres: 10, intermediaires: 12, employes: 14, ouvriers: 18, retraites: 8, inactifs: 18 } },
-        { id: 'hamon', name: "B. HAMON", party: "Parti Socialiste", stats: { agriculteurs: 2, artisans: 4, cadres: 15, intermediaires: 16, employes: 12, ouvriers: 8, retraites: 10, inactifs: 18 } },
-        { id: 'dupont', name: "N. DUPONT-AIGNAN", party: "DLF", stats: { agriculteurs: 6, artisans: 5, cadres: 2, intermediaires: 3, employes: 3, ouvriers: 3, retraites: 3, inactifs: 2 } },
-        { id: 'lassalle', name: "J. LASSALLE", party: "Résistons", stats: { agriculteurs: 8, artisans: 2, cadres: 0, intermediaires: 1, employes: 1, ouvriers: 1, retraites: 1, inactifs: 1 } },
-        { id: 'poutou', name: "P. POUTOU", party: "NPA", stats: { agriculteurs: 0, artisans: 0, cadres: 1, intermediaires: 1, employes: 2, ouvriers: 4, retraites: 0, inactifs: 4 } },
-        { id: 'arthaud', name: "N. ARTHAUD", party: "LO", stats: { agriculteurs: 0, artisans: 0, cadres: 0, intermediaires: 0, employes: 1, ouvriers: 1, retraites: 0, inactifs: 1 } },
-        { id: 'asselineau', name: "F. ASSELINEAU", party: "UPR", stats: { agriculteurs: 1, artisans: 1, cadres: 1, intermediaires: 1, employes: 1, ouvriers: 0, retraites: 1, inactifs: 2 } },
-        { id: 'cheminade', name: "J. CHEMINADE", party: "S&P", stats: { agriculteurs: 0, artisans: 0, cadres: 0, intermediaires: 0, employes: 0, ouvriers: 0, retraites: 0, inactifs: 0 } }
+   const CANDIDATES = [
+        { 
+            id: 'macron', name: "E. MACRON", party: "En Marche!", 
+            stats: { agriculteurs: 15, artisans: 15, cadres: 32, intermediaires: 26, employes: 18, ouvriers: 12, retraites: 22, inactifs: 22 },
+            inertia: { cadres: "LOVE", intermediaires: "LIKE", finance: "LOVE", ouvriers: "DISLIKE", agriculteurs: "DISLIKE" }
+        },
+        { 
+            id: 'fillon', name: "F. FILLON", party: "Les Républicains", 
+            stats: { agriculteurs: 45, artisans: 35, cadres: 30, intermediaires: 18, employes: 10, ouvriers: 5, retraites: 42, inactifs: 8 },
+            inertia: { retraites: "LOVE", agriculteurs: "LOVE", artisans: "LIKE", inactifs: "HATE", ouvriers: "HATE", cadres: "LIKE" }
+        },
+        { 
+            id: 'lepen', name: "M. LE PEN", party: "Front National", 
+            stats: { agriculteurs: 20, artisans: 28, cadres: 8, intermediaires: 22, employes: 38, ouvriers: 48, retraites: 12, inactifs: 20 },
+            inertia: { ouvriers: "LOVE", employes: "LOVE", artisans: "LIKE", cadres: "HATE", inactifs: "DISLIKE", retraites: "DISLIKE" } // Les vieux n'aiment pas la sortie euro
+        },
+        { 
+            id: 'melenchon', name: "J-L. MÉLENCHON", party: "LFI", 
+            stats: { agriculteurs: 3, artisans: 5, cadres: 10, intermediaires: 12, employes: 14, ouvriers: 18, retraites: 8, inactifs: 18 },
+            inertia: { inactifs: "LOVE", ouvriers: "LIKE", intermediaires: "LIKE", cadres: "HATE", retraites: "DISLIKE", artisans: "DISLIKE" }
+        },
+        { 
+            id: 'hamon', name: "B. HAMON", party: "Parti Socialiste", 
+            stats: { agriculteurs: 2, artisans: 4, cadres: 15, intermediaires: 16, employes: 12, ouvriers: 8, retraites: 10, inactifs: 18 },
+            inertia: { inactifs: "LIKE", intermediaires: "LIKE", artisans: "DISLIKE", agriculteurs: "HATE" }
+        },
+        { 
+            id: 'dupont', name: "N. DUPONT-AIGNAN", party: "DLF", 
+            stats: { agriculteurs: 6, artisans: 5, cadres: 2, intermediaires: 3, employes: 3, ouvriers: 3, retraites: 3, inactifs: 2 },
+            inertia: { artisans: "LIKE", retraites: "LIKE" }
+        },
+        { 
+            id: 'lassalle', name: "J. LASSALLE", party: "Résistons", 
+            stats: { agriculteurs: 8, artisans: 2, cadres: 0, intermediaires: 1, employes: 1, ouvriers: 1, retraites: 1, inactifs: 1 },
+            inertia: { agriculteurs: "LOVE", cadres: "HATE" }
+        },
+        { 
+            id: 'poutou', name: "P. POUTOU", party: "NPA", 
+            stats: { agriculteurs: 0, artisans: 0, cadres: 1, intermediaires: 1, employes: 2, ouvriers: 4, retraites: 0, inactifs: 4 },
+            inertia: { ouvriers: "LIKE", cadres: "HATE", artisans: "HATE" }
+        },
+        { id: 'arthaud', name: "N. ARTHAUD", party: "LO", stats: { agriculteurs: 0, artisans: 0, cadres: 0, intermediaires: 0, employes: 1, ouvriers: 1, retraites: 0, inactifs: 1 }, inertia: { ouvriers: "LIKE" } },
+        { id: 'asselineau', name: "F. ASSELINEAU", party: "UPR", stats: { agriculteurs: 1, artisans: 1, cadres: 1, intermediaires: 1, employes: 1, ouvriers: 0, retraites: 1, inactifs: 2 }, inertia: {} },
+        { id: 'cheminade', name: "J. CHEMINADE", party: "S&P", stats: { agriculteurs: 0, artisans: 0, cadres: 0, intermediaires: 0, employes: 0, ouvriers: 0, retraites: 0, inactifs: 0 }, inertia: {} }
     ];
 
     // --- EVENTS HISTORIQUES (Cleaned Up) ---
@@ -203,10 +244,10 @@
         {
             date: "6 Avril 2016", title: "Lancement d'En Marche !", desc: "Emmanuel Macron lance son mouvement à Amiens.",
             choices: [
-                { txt: "'C'est une aventure individuelle vouée à l'échec.'", eff: { cadres: -2, retraites: 2 } },
-                { txt: "'On ne peut pas servir l'État et sa boutique en même temps.'", eff: { retraites: 3, intermediaires: -2 } },
+                { txt: "'C'est une aventure individuelle vouée à l'échec.'", eff: { cadres: -2, retraites: -2, inactifs: 1, ouvriers: 4 } },
+                { txt: "'On ne peut pas servir l'État et sa boutique en même temps.'", eff: { retraites: -2, intermediaires: 1, ouvriers: 3, cadres: -1 } },
                 { txt: "'C'est la preuve que les vieux partis sont morts.'", eff: { cadres: 3, inactifs: 3, retraites: -3 } },
-                { cond: 'macron', txt: "<strong>Macron :</strong> 'Je veux libérer l'énergie de ce pays !'", eff: { cadres: 6, inactifs: 6, ouvriers: -2 } },
+                { cond: 'macron', txt: "<strong>Macron :</strong> 'Je veux libérer l'énergie de ce pays !'", eff: { cadres: 6, artisans: 4, ouvriers: -2 } },
                 { cond: 'lepen', txt: "<strong>Le Pen :</strong> 'En marche vers la banque !'", eff: { ouvriers: 8, employes: 6, cadres: -6 } },
                 { cond: 'fillon', txt: "<strong>Fillon :</strong> 'Il faut de l'expérience, pas de l'enthousiasme juvénile.'", eff: { retraites: 8, cadres: -2 } }
             ]
@@ -1148,16 +1189,43 @@ function checkThresholds() {
         // Optionnel : Forcer le rafraichissement immédiat si vous voulez que ça pop tout de suite
         // Mais le mettre dans la queue est plus sûr pour la stabilité du tour par tour.
     }
-    function applyEffect(eff) {
+   function applyEffect(eff) {
+        let inertiaChanged = false; // Pour savoir si on doit notifier le joueur
+
         for (let k in eff) {
             if(POPULATION[k]) {
-                // Application du NERF (Impact Factor)
-                let val = eff[k] * IMPACT_FACTOR;
-                POPULATION[k].score += val;
-                // Caps strictes 0-100
+                let baseVal = eff[k];
+                
+                // 1. Récupérer l'inertie actuelle
+                let inertiaKey = gameState.candidate.inertia[k] || "NEUTRAL";
+                let inertia = INERTIA_RULES[inertiaKey];
+                
+                // 2. Appliquer Bonus/Malus d'inertie
+                // (Si le peuple t'aime, les bonus comptent +, les malus comptent -)
+                let multiplier = 1.0;
+                if (baseVal > 0) multiplier = inertia.bonus; 
+                else multiplier = inertia.malus; 
+                
+                // 3. Calcul du nouveau score
+                let finalVal = baseVal * multiplier * IMPACT_FACTOR;
+                POPULATION[k].score += finalVal;
+                
+                // Caps (Bornes 0 - 100)
                 if(POPULATION[k].score < 0) POPULATION[k].score = 0;
                 if(POPULATION[k].score > 100) POPULATION[k].score = 100;
+
+                // 4. MISE A JOUR DYNAMIQUE DE L'INERTIE
+                if (updateDynamicInertia(k)) {
+                    inertiaChanged = true;
+                }
             }
+        }
+        
+        checkThresholds(); // Vérifie les événements scriptés (grèves, etc.)
+        
+        // Si l'inertie a changé, on pourrait afficher un petit message (optionnel)
+        if(inertiaChanged) {
+            // console.log("L'opinion a changé !");
         }
     }
 
