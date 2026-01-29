@@ -242,36 +242,36 @@
     // --- EVENTS DE SEUIL ---
     const THRESHOLD_EVENTS = {
         cadres: {
-            low: { threshold: 1, title: "Exil des Cerveaux", desc: "Panique à la Défense ! Les cadres: fuient.", btn: "Tenter de rassurer", eff: { employes: -5, artisans: -5, inactifs: 5 } },
-            high: { threshold: 60, title: "Soutien du CAC 40", desc: "Le patronat finance votre campagne.", btn: "Accepter le soutien", eff: { artisans: 5, employes: 3, ouvriers: -2 } }
+            low: { threshold: 1, title: "Exil des Cerveaux", desc: "Panique à la Défense ! Vos déclarations impopulaires ont fait paniquer l'élite financière...", btn: "Tenter de rassurer", eff: { employes: -5, artisans: -5, inactifs: 5 } },
+            high: { threshold: 60, title: "Soutien du CAC 40", desc: "Le patronat finance secrètement un gigantesque meeting à la station F. Champagne !", btn: "Accepter le soutien", eff: { artisans: 5, employes: 3, ouvriers: -2 } }
         },
         ouvriers: {
-            low: { threshold: 1, title: "Occupations d'Usines", desc: "Séquestrations de patrons dans le Nord.", btn: "Condamner les violences", eff: { cadres: 3, inactifs: 4, employes: -4 } },
-            high: { threshold: 60, title: "Le Mur Bleu de Chauffe", desc: "Les syndicats appellent à voter pour vous.", btn: "Saluer le monde du travail", eff: { employes: 5, inactifs: 3, cadres: -3 } }
+            low: { threshold: 1, title: "Occupations d'Usines", desc: "Le climat délétère auquel vos déclarations anti-ouvriers ont grandement participé aux tentions entre salariés et direction. La CGT Métallurgie lance une opération séquestrations de patrons dans le Nord.", btn: "Condamner les violences", eff: { cadres: 3, inactifs: 4, employes: -4 } },
+            high: { threshold: 60, title: "Le Mur Bleu de Chauffe", desc: "Les syndicats appellent à voter pour vous. C'est une première historique !", btn: "Saluer le monde du travail", eff: { employes: 5, inactifs: 3, cadres: -3 } }
         },
         retraites: {
-            low: { threshold: 1, title: "Révolte des Cheveux Blancs", desc: "Les retraités vident leurs livrets A.", btn: "Appeler au calme", eff: { cadres: -5, artisans: -4 } },
-            high: { threshold: 60, title: "L'Armée des Ombres", desc: "Le vote senior est verrouillé pour vous.", btn: "Remercier nos aînés", eff: { agriculteurs: 4, cadres: 2, inactifs: -2 } }
+            low: { threshold: 1, title: "Révolte des Cheveux Blancs", desc: "Les retraités vident leurs livrets A, c'est la panique dans les banques ! Vous pouvez vous féliciter, vos déclarations provocatrices ont mis la finance Française à feu et à sang.", btn: "Appeler au calme", eff: { cadres: -5, artisans: -4 } },
+            high: { threshold: 60, title: "L'Armée des Ombres", desc: "Le vote senior est verrouillé pour vous. Le jour du vote, des bus entiers de résidents d'EPHAD viendront vous soutenir.", btn: "Remercier nos aînés", eff: { agriculteurs: 4, cadres: 2, inactifs: -2 } }
         },
         inactifs: {
-            low: { threshold: 1, title: "Universités Bloquées", desc: "Barricades à la Sorbonne.", btn: "Rétablir l'ordre", eff: { retraites: 3, cadres: 2, intermediaires: -5 } },
-            high: { threshold: 60, title: "Hype Absolue", desc: "Vous êtes une star sur TikTok.", btn: "Surfer sur le buzz", eff: { intermediaires: 5, ouvriers: 2, retraites: -2 } }
+            low: { threshold: 1, title: "Universités Bloquées", desc: "Barricades à la Sorbonne, l'UNEF appelle à la mobilisation contre votre programme anti-jeunes.", btn: "Rétablir l'ordre", eff: { retraites: 3, cadres: 2, intermediaires: -5 } },
+            high: { threshold: 60, title: "Hype Absolue", desc: "Vous êtes une star sur TikTok. FOR SURE !", btn: "Surfer sur le buzz", eff: { intermediaires: 5, ouvriers: 2, retraites: -2 } }
         },
         agriculteurs: {
-            low: { threshold: 1, title: "Opération Escargot", desc: "Fumier déversé devant votre QG.", btn: "Nettoyer", eff: { cadres: -3, artisans: -2 } },
-            high: { threshold: 60, title: "Candidat du Terroir", desc: "La FNSEA vous soutient.", btn: "Boire un coup", eff: { retraites: 4, artisans: 3 } }
+            low: { threshold: 1, title: "Agriculteurs en Colère", desc: "Une demi tonne de lisier est deversé devant votre QG de campagne. Vos voisins vous remercient.", btn: "Nettoyer", eff: { cadres: -3, artisans: -2 } },
+            high: { threshold: 60, title: "Candidat du Terroir", desc: "La FNSEA vous soutient. Vous vous êtes attirés l'affection du syndicat le plus mafieux de France. Bravo !", btn: "Boire un coup", eff: { retraites: 4, artisans: 3 } }
         },
         artisans: {
-            low: { threshold: 1, title: "Rideau de Fer", desc: "Grève des commerçants.", btn: "Dialoguer", eff: { cadres: -4, retraites: -3 } },
-            high: { threshold: 60, title: "La France qui se lève tôt", desc: "Les artisans: font votre pub.", btn: "Se féliciter", eff: { retraites: 3, ouvriers: 2 } }
+            low: { threshold: 1, title: "Rideau de Fer", desc: "Grève des commerçants, ils ferment leurs commerces pour protester contre vos promesses électorales.", btn: "Essayer de dialoguer", eff: { cadres: -4, retraites: -3 } },
+            high: { threshold: 60, title: "La France qui se lève tôt", desc: "Les artisans font votre pub, on distribue vos tracts dans toutes les boutiques de France.", btn: "Se féliciter", eff: { retraites: 3, intermediaires: 6 } }
         },
         intermediaires: {
-            low: { threshold: 1, title: "Grève des Services Publics", desc: "Profs et infirmières dans la rue.", btn: "Dénoncer", eff: { cadres: -2, employes: -4 } },
-            high: { threshold: 60, title: "Hégémonie Culturelle", desc: "Les salles des profs sont acquises.", btn: "Soutenir", eff: { inactifs: 5, cadres: 2 } }
+            low: { threshold: 1, title: "Grève des Services Publics", desc: "Profs et infirmières dans la rue : les fonctionnaires vous détestent", btn: "Dénoncer", eff: { cadres: -2, employes: -4 } },
+            high: { threshold: 60, title: "Hégémonie Culturelle", desc: "Les salles des profs sont acquises, on colle vos affiches dans tous les lycées", btn: "Soutenir", eff: { inactifs: 5, cadres: 2 } }
         },
         employes: {
-            low: { threshold: 1, title: "Colère Silencieuse", desc: "Boycott massif de vos meetings.", btn: "Séduire", eff: { ouvriers: -3, intermediaires: -2 } },
-            high: { threshold: 60, title: "Vague Populaire", desc: "Le peuple tertiaire vous suit.", btn: "Incarner", eff: { ouvriers: 4, intermediaires: 3 } }
+            low: { threshold: 1, title: "Colère Silencieuse", desc: "Boycott massif de vos meetings, vous n'avez pas su dialoguer avec la France qui bosse.", btn: "Séduire", eff: { ouvriers: -3, intermediaires: -2 } },
+            high: { threshold: 60, title: "Vague Populaire", desc: "Le peuple tertiaire vous suit ! On ne parle que de vous à la pause café.", btn: "Incarner", eff: { ouvriers: 4, intermediaires: 3 } }
         }
     };
 
@@ -307,7 +307,7 @@
     {
         date: "16 Nov 2016", 
         title: "Candidature Officielle", 
-        desc: "Macron se déclare à Bobigny.",
+        desc: "Macron se déclare candidat à Bobigny.",
         choices: [
             { txt: "'Il est co-auteur du quinquennat Hollande.'", eff: { ouvriers: 1, employes: 1, cadres: -1, intermediaires: -1 } },
             { txt: "'C'est une bulle médiatique qui va éclater.'", eff: { retraites: 2, agriculteurs: 1, cadres: -2, inactifs: -1, intermediaires: -1 } },
@@ -319,7 +319,7 @@
     },
     {
         date: "20 Nov 2016", 
-        title: "Sarkozy éliminé", 
+        title: "Sarkozy éliminé de la primaire de la droite", 
         desc: "Le 1er tour de la primaire de la droite sort l'ancien président.",
         choices: [
             { txt: "'Les Français veulent un renouvellement.'", eff: { cadres: 1, intermediaires: 1, retraites: -1 } },
@@ -372,7 +372,7 @@
     {
         date: "1 Déc 2016", 
         title: "Hollande Renonce", 
-        desc: "Le président sortant jette l'éponge.",
+        desc: "Le président sortant jette l'éponge, il ne veut plus devenir candidat",
         choices: [
             { txt: "'C'est un constat d'échec lucide.'", eff: { cadres: 1, artisans: 1, retraites: -1, employes: -1 } },
             { txt: "'C'est une décision digne.'", eff: { retraites: 3, inactifs: 1, ouvriers: -1, cadres: -1, employes: 0 } },
@@ -398,7 +398,7 @@
     {
         date: "Déc 2016", 
         title: "Valls démissionne", 
-        desc: "Manuel Valls se lance dans la primaire.",
+        desc: "Manuel Valls se lance dans la primaire de la gauche.",
         choices: [
             { txt: "'Il quitte le navire alors qu'il est responsable du bilan.'", eff: { inactifs: 3, ouvriers: 3, cadres: -3, retraites: -4 } },
             { txt: "'Il veut incarner une gauche républicaine et ferme.'", eff: { retraites: 3, cadres: 2, inactifs: -2, ouvriers: -2 } },
@@ -411,7 +411,7 @@
     {
         date: "Déc 2016", 
         title: "Montebourg & Hamon", 
-        desc: "Les frondeurs se lancent.",
+        desc: "Les frondeurs du PS se lancent.",
         choices: [
             { txt: "'La primaire va permettre un vrai débat d'idées.'", eff: { intermediaires: 2, employes: 2, cadres: -1, retraites: -1 } },
             { txt: "'Ce sont les frondeurs qui viennent régler leurs comptes.'", eff: { cadres: 1, retraites: 1, inactifs: -2, ouvriers: -1 } },
@@ -449,7 +449,7 @@
     {
         date: "22 Jan 2017", 
         title: "Hamon en Tête", 
-        desc: "Surprise au 1er tour de la primaire gauche.",
+        desc: "Surprise au 1er tour de la primaire gauche : Hamon est en tête, le frondeur de gauche fait son effet ! Mais l'impulsion d'une primaire sera-t-elle suffisante pour convaincre les Français ?",
         choices: [
             { txt: "'L'utopie a pris le pas sur le réalisme.'", eff: { inactifs: 3, intermediaires: 2, cadres: -3, retraites: -1 } },
             { txt: "'C'est le rejet définitif du quinquennat.'", eff: { ouvriers: 3, employes: 3, cadres: -2, retraites: -3 } },
@@ -462,7 +462,7 @@
     {
         date: "24 Jan 2017", 
         title: "LE PENELOPE GATE", 
-        desc: "Le Canard révèle l'emploi fictif présumé.",
+        desc: "Le Canard révèle l'emploi fictif présumé de la femme de François Fillon.",
         choices: [
             { txt: "'Laissons la justice faire son travail.'", eff: { retraites: 3, cadres: -1, ouvriers: -1 } },
             { txt: "'C'est une boule puante lancée par le pouvoir !'", eff: { artisans: 3, agriculteurs: 3, cadres: -3, inactifs: -4 } },
@@ -475,7 +475,7 @@
     {
         date: "25 Jan 2017", 
         title: "Enquête du PNF", 
-        desc: "La justice s'active très vite.",
+        desc: "La justice s'active très vite, le parquet national des finances lance son enquête au sujet du Pénélope Gate",
         choices: [
             { txt: "'La justice va étonnamment vite...'", eff: { artisans: 3, agriculteurs: 2, cadres: -2, retraites: -4 } },
             { txt: "'L'affaire est sérieuse, le Parquet a des éléments.'", eff: { cadres: 3, intermediaires: 2, retraites: -1, agriculteurs: -2 } },
@@ -487,7 +487,7 @@
     {
         date: "26 Jan 2017", 
         title: "Fillon au 20H", 
-        desc: "'J'aime ma femme'.",
+        desc: "'Il déclare : J'aime ma femme'.",
         choices: [
             { txt: "'Il tente de jouer sur la corde sensible.'", eff: { retraites: 2, inactifs: 2, cadres: -2, ouvriers: -1 } },
             { txt: "'Il a été combatif et sincère.'", eff: { agriculteurs: 3, retraites: 2, cadres: -2, employes: -2 } },
