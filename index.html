@@ -180,8 +180,8 @@
 
     const POPULATION = {
         agriculteurs: { label: "agriculteurs:", weight: 1.5, score: 0 },
-        artisans: { label: "artisans:/Chefs", weight: 6.7, score: 0 },
-        cadres: { label: "cadres:/Sup", weight: 22.4, score: 0 },
+        artisans: { label: "artisans", weight: 6.7, score: 0 },
+        cadres: { label: "cadres", weight: 22.4, score: 0 },
         intermediaires: { label: "Prof. Interm.", weight: 25.1, score: 0 },
         employes: { label: "Employés", weight: 25.2, score: 0 },
         ouvriers: { label: "ouvriers:", weight: 18.6, score: 0 },
@@ -194,46 +194,48 @@
         { 
             id: 'macron', name: "E. MACRON", party: "En Marche!", 
             stats: { agriculteurs: 15, artisans: 15, cadres: 32, intermediaires: 26, employes: 18, ouvriers: 12, retraites: 22, inactifs: 22 },
-            inertia: { cadres: "LOVE", intermediaires: "LIKE", finance: "LOVE", ouvriers: "DISLIKE", agriculteurs: "DISLIKE" }
+            inertia: { retraites: "LOVE", cadres: "LOVE", intermediaires: "LIKE", artisans: "LIKE", agriculteurs: "DISLIKE", inactifs: "HATE", employes: "DISLIKE", ouvriers: "HATE"}
         },
         { 
             id: 'fillon', name: "F. FILLON", party: "Les Républicains", 
             stats: { agriculteurs: 45, artisans: 35, cadres: 30, intermediaires: 18, employes: 10, ouvriers: 5, retraites: 42, inactifs: 8 },
-            inertia: { retraites: "LOVE", agriculteurs: "LOVE", artisans: "LIKE", inactifs: "HATE", ouvriers: "HATE", cadres: "LIKE" }
+            inertia: { retraites: "LOVE", cadres: "LOVE", intermediaires: "LIKE", artisans: "LIKE", agriculteurs: "DISLIKE", inactifs: "HATE", employes: "DISLIKE", ouvriers: "HATE"}
         },
         { 
             id: 'lepen', name: "M. LE PEN", party: "Front National", 
             stats: { agriculteurs: 20, artisans: 28, cadres: 8, intermediaires: 22, employes: 38, ouvriers: 48, retraites: 12, inactifs: 20 },
-            inertia: { ouvriers: "LOVE", employes: "LOVE", artisans: "LIKE", cadres: "HATE", inactifs: "DISLIKE", retraites: "DISLIKE" } // Les vieux n'aiment pas la sortie euro
+            inertia: { retraites: "HATE", cadres: "DISLIKE", intermediaires: "HATE", artisans: "LIKE", agriculteurs: "LOVE", inactifs: "LIKE", employes: "HATE", ouvriers: "LIKE"} // Les vieux n'aiment pas la sortie euro
         },
         { 
             id: 'melenchon', name: "J-L. MÉLENCHON", party: "LFI", 
             stats: { agriculteurs: 3, artisans: 5, cadres: 10, intermediaires: 12, employes: 14, ouvriers: 18, retraites: 8, inactifs: 18 },
-            inertia: { inactifs: "LOVE", ouvriers: "LIKE", intermediaires: "LIKE", cadres: "HATE", retraites: "DISLIKE", artisans: "DISLIKE" }
-        },
+            inertia: { retraites: "LOVE", cadres: "HATE", intermediaires: "LIKE", artisans: "DISLIKE", agriculteurs: "LIKE", inactifs: "LOVE", employes: "LIKE", ouvriers: "LOVE"}        },
         { 
             id: 'hamon', name: "B. HAMON", party: "Parti Socialiste", 
             stats: { agriculteurs: 2, artisans: 4, cadres: 15, intermediaires: 16, employes: 12, ouvriers: 8, retraites: 10, inactifs: 18 },
-            inertia: { inactifs: "LIKE", intermediaires: "LIKE", artisans: "DISLIKE", agriculteurs: "HATE" }
+            inertia: { retraites: "DISLIKE", cadres: "DISLIKE", intermediaires: "LOVE", artisans: "DISLIKE", agriculteurs: "DISLIKE", inactifs: "LIKE", employes: "LIKE", ouvriers: "DISLIKE"}
         },
         { 
             id: 'dupont', name: "N. DUPONT-AIGNAN", party: "DLF", 
             stats: { agriculteurs: 6, artisans: 5, cadres: 2, intermediaires: 3, employes: 3, ouvriers: 3, retraites: 3, inactifs: 2 },
-            inertia: { artisans: "LIKE", retraites: "LIKE" }
+            inertia: { retraites: "LIKE", cadres: "LOVE", intermediaires: "DISLIKE", artisans: "LOVE", agriculteurs: "LIKE", inactifs: "HATE", employes: "DISLIKE", ouvriers: "HATE"}
         },
         { 
             id: 'lassalle', name: "J. LASSALLE", party: "Résistons", 
             stats: { agriculteurs: 8, artisans: 2, cadres: 0, intermediaires: 1, employes: 1, ouvriers: 1, retraites: 1, inactifs: 1 },
-            inertia: { agriculteurs: "LOVE", cadres: "HATE" }
+            inertia: { retraites: "LOVE", cadres: "LOVE", intermediaires: "LOVE", artisans: "LOVE", agriculteurs: "LOVE", inactifs: "LOVE", employes: "LOVE", ouvriers: "LOVE"}
         },
         { 
             id: 'poutou', name: "P. POUTOU", party: "NPA", 
             stats: { agriculteurs: 0, artisans: 0, cadres: 1, intermediaires: 1, employes: 2, ouvriers: 4, retraites: 0, inactifs: 4 },
-            inertia: { ouvriers: "LIKE", cadres: "HATE", artisans: "HATE" }
+            inertia: { retraites: "HATE", cadres: "HATE", intermediaires: "DISLIKE", artisans: "DISLIKE", agriculteurs: "LIKE", inactifs: "LOVE", employes: "LIKE", ouvriers: "LOVE"}
         },
-        { id: 'arthaud', name: "N. ARTHAUD", party: "LO", stats: { agriculteurs: 0, artisans: 0, cadres: 0, intermediaires: 0, employes: 1, ouvriers: 1, retraites: 0, inactifs: 1 }, inertia: { ouvriers: "LIKE" } },
-        { id: 'asselineau', name: "F. ASSELINEAU", party: "UPR", stats: { agriculteurs: 1, artisans: 1, cadres: 1, intermediaires: 1, employes: 1, ouvriers: 0, retraites: 1, inactifs: 2 }, inertia: {} },
-        { id: 'cheminade', name: "J. CHEMINADE", party: "S&P", stats: { agriculteurs: 0, artisans: 0, cadres: 0, intermediaires: 0, employes: 0, ouvriers: 0, retraites: 0, inactifs: 0 }, inertia: {} }
+        { id: 'arthaud', name: "N. ARTHAUD", party: "LO", stats: { agriculteurs: 0, artisans: 0, cadres: 0, intermediaires: 0, employes: 1, ouvriers: 1, retraites: 0, inactifs: 1 }, 
+         inertia: { retraites: "HATE", cadres: "HATE", intermediaires: "HATE", artisans: "HATE", agriculteurs: "LIKE", inactifs: "LOVE", employes: "LIKE", ouvriers: "LOVE"} },
+        { id: 'asselineau', name: "F. ASSELINEAU", party: "UPR", stats: { agriculteurs: 1, artisans: 1, cadres: 1, intermediaires: 1, employes: 1, ouvriers: 0, retraites: 1, inactifs: 2 }, 
+         inertia: { retraites: "DISLIKE", cadres: "DISLIKE", intermediaires: "DISLIKE", artisans: "DISLIKE", agriculteurs: "DISLIKE", inactifs: "LOVE", employes: "DISLIKE", ouvriers: "DISLIKE"} },
+        { id: 'cheminade', name: "J. CHEMINADE", party: "S&P", stats: { agriculteurs: 0, artisans: 0, cadres: 0, intermediaires: 0, employes: 0, ouvriers: 0, retraites: 0, inactifs: 0 }, 
+         inertia: { retraites: "LOVE", cadres: "DISLIKE", intermediaires: "LIKE", artisans: "LIKE", agriculteurs: "DISLIKE", inactifs: "HATE", employes: "DISLIKE", ouvriers: "LOVE"} }
     ];
 
     // --- EVENTS DE SEUIL ---
