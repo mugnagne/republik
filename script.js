@@ -22,19 +22,22 @@ let gameState = {
         gameState.candidate = c;
         gameState.turn = 1;
         gameState.triggeredThresholds = [];
-        
-        // Init Stats
+        gameState.scoreHistory = {}; // NOUVEAU : Pour stocker l'historique
+
+        // Init Stats & Historique
         for (let k in c.stats) {
-            if(POPULATION[k]) POPULATION[k].score = c.stats[k];
+            if(POPULATION[k]) {
+                POPULATION[k].score = c.stats[k];
+                // On initialise l'historique avec le score de départ pour chaque catégorie
+                gameState.scoreHistory[k] = [c.stats[k]]; 
+            }
         }
 
-        // SELECTION ALEATOIRE CHRONOLOGIQUE
-        let shuffled = [...SCENARIO_EVENTS].sort(() => 0.5 - Math.random());
-        let selected = shuffled.slice(0, 30); // On en garde 30
-        selected.sort((a, b) => SCENARIO_EVENTS.indexOf(a) - SCENARIO_EVENTS.indexOf(b)); // On remet dans l'ordre
+       let shuffled = [...SCENARIO_EVENTS].sort(() => 0.5 - Math.random());
+        let selected = shuffled.slice(0, 30); 
+        selected.sort((a, b) => SCENARIO_EVENTS.indexOf(a) - SCENARIO_EVENTS.indexOf(b)); 
         gameState.eventQueue = selected;
 
-        // UI
         document.getElementById('selection-screen').classList.remove('active');
         document.getElementById('game-screen').classList.add('active');
         document.getElementById('candidate-name').innerText = c.name;
@@ -102,7 +105,7 @@ let gameState = {
             btn.className = 'choice-btn';
             btn.innerHTML = `<span class="bold">${p.name}</span> <span style="font-style:italic; opacity:0.7; font-size:0.9em;">(${p.type})</span>`;
             btn.onclick = () => {
-                applyEffect(p.eff);
+                ect(p.eff);
                 nextTurn();
             };
             c.appendChild(btn);
@@ -110,18 +113,19 @@ let gameState = {
     }
 
     function applyEffect(eff) {
-        let inertiaChanged = false; // Pour savoir si on doit notifier le joueur
+        let inertiaChanged = false;
 
         for (let k in eff) {
             if(POPULATION[k]) {
                 let baseVal = eff[k];
                 
-                // 1. Récupérer l'inertie actuelle
+                // 1. Récupérer l'inertie actuelle (basée sur la dynamique précédente)
                 let inertiaKey = gameState.candidate.inertia[k] || "NEUTRAL";
                 let inertia = INERTIA_RULES[inertiaKey];
                 
-                // 2. Appliquer Bonus/Malus d'inertie
-                // (Si le peuple t'aime, les bonus comptent +, les malus comptent -)
+                // 2. Appliquer Bonus/Malus
+                // Si on est dans une dynamique positive (LOVE/LIKE), les gains sont amplifiés, les pertes réduites.
+                // Si on est dans une dynamique négative (HATE/DISLIKE), les gains sont réduits, les pertes amplifiées.
                 let multiplier = 1.0;
                 if (baseVal > 0) multiplier = inertia.bonus; 
                 else multiplier = inertia.malus; 
@@ -130,23 +134,18 @@ let gameState = {
                 let finalVal = baseVal * multiplier * IMPACT_FACTOR;
                 POPULATION[k].score += finalVal;
                 
-                // Caps (Bornes 0 - 100)
+                // Caps
                 if(POPULATION[k].score < 0) POPULATION[k].score = 0;
                 if(POPULATION[k].score > 100) POPULATION[k].score = 100;
 
-                // 4. MISE A JOUR DYNAMIQUE DE L'INERTIE
-                if (updateDynamicInertia(k)) {
+                // 4. Mise à jour de l'historique et de la dynamique
+                if (updateMomentumInertia(k)) {
                     inertiaChanged = true;
                 }
             }
         }
         
-        checkThresholds(); // Vérifie les événements scriptés (grèves, etc.)
-        
-        // Si l'inertie a changé, on pourrait afficher un petit message (optionnel)
-        if(inertiaChanged) {
-            // console.log("L'opinion a changé !");
-        }
+        checkThresholds();
     }
     
     function updateDynamicInertia(categoryKey) {
@@ -271,5 +270,44 @@ let gameState = {
         document.getElementById('final-status').innerText = st;
         document.getElementById('final-desc').innerText = txt;
     }
+function updateMomentumInertia(key) {
+        let history = gameState.scoreHistory[key];
+        let currentScore = POPULATION[key].score;
 
+        // Ajouter le nouveau score à l'historique
+        history.push(currentScore);
+        
+        // Garder seulement les 5 derniers tours pour le calcul de tendance
+        if (history.length > 5) {
+            history.shift(); // Enlève le plus vieux
+        }
+
+        // S'il n'y a pas assez d'historique (début de partie), on reste sur l'inertie de base
+        if (history.length < 2) return false;
+
+        // Calcul de la tendance : Score Actuel vs Moyenne des tours précédents
+        // On compare le score actuel au score d'il y a 'n' tours (le plus vieux de la liste)
+        let oldestScore = history[0];
+        let delta = currentScore - oldestScore; // Positif = progression, Négatif = chute
+
+        let currentInertia = gameState.candidate.inertia[key] || "NEUTRAL";
+        let newInertia = "NEUTRAL";
+
+        // Définition des seuils de dynamique (sur ~3-5 tours)
+        // Note: Ces seuils dépendent de votre IMPACT_FACTOR. 
+        // Si IMPACT_FACTOR est 0.2, gagner 2 ou 3 points réels est une grosse perf.
+        
+        if (delta >= 3.0) newInertia = "LOVE";        // Forte hausse (> +3pts)
+        else if (delta >= 1.0) newInertia = "LIKE";   // Hausse modérée (+1 à +3pts)
+        else if (delta > -1.0) newInertia = "NEUTRAL"; // Stagnation (-1 à +1pts)
+        else if (delta > -3.0) newInertia = "DISLIKE"; // Baisse modérée (-1 à -3pts)
+        else newInertia = "HATE";                     // Chute libre (< -3pts)
+
+        // Mise à jour si changement
+        if (newInertia !== currentInertia) {
+            gameState.candidate.inertia[key] = newInertia;
+            return true;
+        }
+        return false;
+    }
     initRoster();
