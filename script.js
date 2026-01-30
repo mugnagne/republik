@@ -104,10 +104,11 @@ let gameState = {
             let btn = document.createElement('div');
             btn.className = 'choice-btn';
             btn.innerHTML = `<span class="bold">${p.name}</span> <span style="font-style:italic; opacity:0.7; font-size:0.9em;">(${p.type})</span>`;
-            btn.onclick = () => {
-                ect(p.eff);
-                nextTurn();
-            };
+             // CE QU'IL FAUT ÉCRIRE (CORRECTION) :
+btn.onclick = () => {
+    applyEffect(p.eff); // <--- "p" est le lieu, "eff" sont les effets
+    nextTurn();
+};
             c.appendChild(btn);
         });
     }
