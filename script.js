@@ -287,6 +287,22 @@ function applyEffect(eff) {
         document.getElementById('final-status').innerText = st;
         document.getElementById('final-desc').innerText = txt;
     }
+
+function applyNaturalDecay() {
+        // Chaque tour, on perd un tout petit peu partout (l'usure du pouvoir / campagne adverse)
+        // Plus on est haut, plus on perd (les autres nous attaquent)
+        const DECAY_RATE = 0.02; // 2% de perte par tour sur le score actuel
+
+        for (let key in POPULATION) {
+            let score = POPULATION[key].score;
+            if (score > 0) {
+                // On perd proportionnellement à son score
+                // Ex: Si score 50%, on perd 1%. Si score 10%, on perd 0.2%.
+                let loss = score * DECAY_RATE;
+                POPULATION[key].score -= loss;
+            }
+        }
+    }
 function updateMomentumInertia(key) {
         let history = gameState.scoreHistory[key];
         let currentScore = POPULATION[key].score;
