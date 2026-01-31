@@ -1,5 +1,5 @@
 const MAX_TURNS = 35; 
-    const IMPACT_FACTOR = 2;
+    const IMPACT_FACTOR = 1;
 
     // --- SYSTÈME D'INERTIE ---
     // Les multiplicateurs selon la relation du candidat avec la catégorie
