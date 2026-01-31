@@ -112,40 +112,56 @@ btn.onclick = () => {
             c.appendChild(btn);
         });
     }
-
-    function applyEffect(eff) {
+function applyEffect(eff) {
         let inertiaChanged = false;
 
         for (let k in eff) {
             if(POPULATION[k]) {
                 let baseVal = eff[k];
                 
-                // 1. Récupérer l'inertie actuelle (basée sur la dynamique précédente)
+                // 1. Récupérer l'inertie actuelle
                 let inertiaKey = gameState.candidate.inertia[k] || "NEUTRAL";
                 let inertia = INERTIA_RULES[inertiaKey];
                 
-                // 2. Appliquer Bonus/Malus
-                // Si on est dans une dynamique positive (LOVE/LIKE), les gains sont amplifiés, les pertes réduites.
-                // Si on est dans une dynamique négative (HATE/DISLIKE), les gains sont réduits, les pertes amplifiées.
+                // 2. Appliquer Bonus/Malus d'inertie
                 let multiplier = 1.0;
                 if (baseVal > 0) multiplier = inertia.bonus; 
                 else multiplier = inertia.malus; 
                 
-                // 3. Calcul du nouveau score
-                let finalVal = baseVal * multiplier * IMPACT_FACTOR;
+                // --- NOUVEAU : PLAFOND DE VERRE (Diminishing Returns) ---
+                // Plus le score est haut, plus c'est dur de monter
+                let currentScore = POPULATION[k].score;
+                let glassCeiling = 1.0;
+                
+                if (baseVal > 0) { // Si on gagne des points
+                    if (currentScore > 50) glassCeiling = 0.5;  // 50% gain au-dessus de 50%
+                    if (currentScore > 70) glassCeiling = 0.2;  // 20% gain au-dessus de 70%
+                    if (currentScore > 85) glassCeiling = 0.05; // Quasi impossible de monter plus haut
+                }
+                
+                // --- NOUVEAU : SOMME NULLE (Résistance) ---
+                // Voler des voix est dur si le réservoir est "vide" (autres candidats)
+                // Ici simulé par le fait qu'on ne peut pas dépasser 100% (déjà géré par les caps)
+                // Mais on pourrait ajouter une "résistance" si on voulait complexifier.
+                // Pour l'instant, le plafond de verre suffit à simuler la difficulté de convaincre les derniers récalcitrants.
+
+                // 3. Calcul du nouveau score avec tous les facteurs
+                let finalVal = baseVal * multiplier * IMPACT_FACTOR * glassCeiling;
+                
                 POPULATION[k].score += finalVal;
                 
                 // Caps
                 if(POPULATION[k].score < 0) POPULATION[k].score = 0;
                 if(POPULATION[k].score > 100) POPULATION[k].score = 100;
 
-                // 4. Mise à jour de l'historique et de la dynamique
+                // 4. Mise à jour de l'historique
                 if (updateMomentumInertia(k)) {
                     inertiaChanged = true;
                 }
             }
         }
         
+        applyNaturalDecay(); // <--- APPEL DE LA NOUVELLE FONCTION D'ÉROSION
         checkThresholds();
     }
     
